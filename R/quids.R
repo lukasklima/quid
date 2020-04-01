@@ -23,11 +23,7 @@
 #' \code{id}, \code{condition} and \code{rt} all must have the same length.
 #'
 
-quids <- function(x, ...) {
-  UseMethod("quids")
-}
-
-quids.default <- function(id #vector with participant ID, can be a factor or numeric
+quids <- function(id #vector with participant ID, can be a factor or numeric
                  , condition #vector with condition ID, can be a factor or numeric
                  , rt #vector with response times per trial, has to be numeric
                  , prior = c(1/6, 1/10) #prior scale settings for the standard deviation of the overall effect and the individual effects
