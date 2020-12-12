@@ -8,7 +8,6 @@
 #' @param condition Numeric or factor. A vector indicating the condition.
 #' @param rt Numeric. A vector containing the response times for each trial.
 #'
-#' @import MCMCpack
 #' @import BayesFactor
 #'
 #' @export
@@ -33,7 +32,7 @@ quids <- function(id #vector with participant ID, can be a factor or numeric
                  , messages = TRUE
 ){
 
-  require(BayesFactor, quietly = messages)
+  requireNamespace(BayesFactor, quietly = messages)
 
   if(!(is.numeric(condition) | is.factor(condition))) stop("Condition has to be numeric or a factor.")
   if(!(is.numeric(id) | is.factor(id))) stop("Id has to be numeric or a factor.")

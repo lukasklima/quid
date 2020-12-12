@@ -6,7 +6,8 @@
 \alias{quid-package}
 \title{Bayesian Mixed Models for Qualitative Individual Differences}
 \description{
-Estimate individual effect sizes and evaluate order constraints
+Test whether equality and order constraints hold for all individuals
+simultaneously by comparing Bayesian mixed models through Bayes factors.
 }
 \author{
 \strong{Maintainer}: Lukas Klima \email{lukas.klima@student.uva.nl}

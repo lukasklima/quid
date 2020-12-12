@@ -1,6 +1,7 @@
 #' Bayesian Mixed Models for Qualitative Individual Differences
 #'
-#' Estimate individual effect sizes and evaluate order constraints
+#' Test whether equality and order constraints hold for all individuals
+#' simultaneously by comparing Bayesian mixed models through Bayes factors.
 #'
 #' @docType package
 #' @name quid
