@@ -1,5 +1,5 @@
 constraintBF <- function(formula, data, whichRandom = NULL, ID,
-                        whichConstraint = list(), rscaleEffects,
+                        whichConstraint, rscaleEffects,
                         iterationsPosterior = 10000, iterationsPrior = iterationsPosterior*10,
                         burnin = 1000, ...) {
 
@@ -17,16 +17,14 @@ constraintBF <- function(formula, data, whichRandom = NULL, ID,
   colnames(thetas) <- janitor::make_clean_names(colnames(thetas))
 
   # get constraints
-  constraintEffect <- names(whichConstraint) # name of effect
-  constraintElement <- gsub("\\s", "", whichConstraint[[1]]) # extract element and remove whitespaces
-  constraintUpper <- sub(".*<", "", constraintElement) # condition where effect is expected to be bigger
+  constraints <- createConstraints(whichConstraint = whichConstraint)
   IDclean <- janitor::make_clean_names(ID)
 
   # get indeces for posterior
-  regexTheta0 <- paste0("^", constraintEffect, "_", constraintUpper, "$")
+  regexTheta0 <- paste0("^", constraints$constraintEffect, "_", constraints$constraintUpper, "$")
   iTheta0 <- grep(regexTheta0, colnames(thetas))
 
-  regexThetaID <- paste0("^", IDclean, "_", constraintEffect, "_", "\\d+", "_",constraintUpper, "$")
+  regexThetaID <- paste0("^", IDclean, "_", constraints$constraintEffect, "_", "\\d+", "_", constraints$constraintUpper, "$")
   iThetaID <- grep("^id_cond_\\d+_2$", colnames(thetas))
 
   # add overall effect to individuals' deviations
