@@ -10,9 +10,9 @@ constraintBF <- function(formula, data, whichRandom = NULL, ID,
                                                whichRandom = whichRandom, rscaleEffects = rscaleEffects)
 
   # get index of full model
-  indexFullModel <- length(generalTestObj@numerator)
+  indexFullModel <- extractIndexFullModel(generalTestObj)
   # sample from full model posterior
-  thetas <- posterior(generalTestObj, index = indexFullModel, iterations = iterationsPosterior)
+  thetas <- BayesFactor::posterior(generalTestObj, index = indexFullModel, iterations = iterationsPosterior)
   # clean colnames of posterior sample
   colnames(thetas) <- janitor::make_clean_names(colnames(thetas))
 
