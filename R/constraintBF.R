@@ -1,9 +1,14 @@
 constraintBF <- function(formula, data, whichRandom = NULL, ID,
                         whichConstraint, rscaleEffects,
-                        iterationsPosterior = 10000, iterationsPrior = iterationsPosterior*10,
+                        iterationsPosterior = 10000, iterationsPrior = iterationsPosterior * 10,
                         burnin = 1000, ...) {
 
+  if (any(attr(terms(formula, data = data), "order") > 3 )) {
+    stop("constraintBF currently only supports interactions of up to 3 terms.")
+  }
+
   # make priors: if random then rscale prior = 1
+  # capture ellipsis and pass to generalTestBF
 
   # run all models
   generalTestObj <- BayesFactor::generalTestBF(formula = formula, data = data,
