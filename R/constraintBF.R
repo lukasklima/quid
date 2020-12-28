@@ -23,6 +23,7 @@ constraintBF <- function(formula, data, whichRandom = NULL, ID,
 
   # get constraints
   constraints <- createConstraints(whichConstraint = whichConstraint)
+  # clean names
   IDclean <- janitor::make_clean_names(ID)
 
   # get indeces for posterior
