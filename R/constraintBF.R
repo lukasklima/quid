@@ -18,20 +18,12 @@ constraintBF <- function(formula, data, whichRandom = NULL, ID,
   indexFullModel <- extractIndexFullModel(generalTestObj)
   # sample from full model posterior
   thetas <- BayesFactor::posterior(generalTestObj, index = indexFullModel, iterations = iterationsPosterior)
-  # clean colnames of posterior sample
-  colnames(thetas) <- janitor::make_clean_names(colnames(thetas))
 
   # get constraints
   constraints <- createConstraints(whichConstraint = whichConstraint)
-  # clean names
-  IDclean <- janitor::make_clean_names(ID)
 
   # get indeces for posterior
-  regexTheta0 <- paste0("^", constraints$constraintEffect, "_", constraints$constraintUpper, "$")
-  iTheta0 <- grep(regexTheta0, colnames(thetas))
-
-  regexThetaID <- paste0("^", IDclean, "_", constraints$constraintEffect, "_", "\\d+", "_", constraints$constraintUpper, "$")
-  iThetaID <- grep("^id_cond_\\d+_2$", colnames(thetas))
+  iTheta <- extractIndeces(constraints = constraints, thetas = thetas, ID = ID, data = data)
 
   # add overall effect to individuals' deviations
   keep <- (burnin + 1) : iterationsPosterior
