@@ -36,9 +36,9 @@ constraintBF <- function(formula, data, whichRandom = NULL, ID,
   totalThetas <- addThetas(thetas = thetas, iTheta = iTheta, keep = keep)
 
   # evaluate posterior probability of all thetas being positive
-  good <- totalTheta > 0 #evaluate their sign
-  allGood <- apply(good, 1, mean) #evaluate how often all theta estimates are positive
-  postProb <- mean(allGood == 1) #Posterior probability of all theta_i being positive
+  constrainedThetas <- estimateConstrainedThetas(totalThetas = totalThetas, cleanConstraints = cleanConstraints)
+  pass <- apply(constrainedThetas, 1, mean) == 1
+  posteriorProbability <- mean(pass)
 
   # get prior probability of all thetas being positive
   # set priors
