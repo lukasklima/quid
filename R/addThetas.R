@@ -1,10 +1,10 @@
 addThetas <- function(thetas = thetas, iTheta = iTheta, keep = keep) {
 
-  totalTheta <- vector(mode = "list", length = length(iTheta$iTheta0))
-  names(totalTheta) <- colnames(iTheta$iThetaID)
+  totalTheta <- vector(mode = "list", length = length(iTheta$commonEffect))
+  names(totalTheta) <- colnames(iTheta$indEffect)
 
   for (i in seq_along(totalTheta)) {
-    totalTheta[[i]] <- thetas[keep, iTheta$iTheta0[i]] + thetas[keep, iTheta$iThetaID[, i]]
+    totalTheta[[i]] <- thetas[keep, iTheta$commonEffect[i]] + thetas[keep, iTheta$indEffect[, i]]
   }
 
   return(totalTheta)
