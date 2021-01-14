@@ -19,8 +19,13 @@ constraintBF <- function(formula, data, whichRandom = NULL, ID,
   # sample from full model posterior
   thetas <- BayesFactor::posterior(generalTestObj, index = indexFullModel, iterations = iterationsPosterior)
 
+  # clean names
+  colnames(thetas) <- janitor::make_clean_names(colnames(thetas))
+  ID <- janitor::make_clean_names(ID)
+
   # get constraints
   constraints <- createConstraints(whichConstraint = whichConstraint)
+  cleanConstraints <- createCleanConstraints(constraints = constraints)
 
   # get indeces for posterior
   iTheta <- extractIndeces(constraints = constraints, thetas = thetas, ID = ID, data = data)
@@ -28,8 +33,7 @@ constraintBF <- function(formula, data, whichRandom = NULL, ID,
   # add overall effect to individuals' deviations
   keep <- (burnin + 1) : iterationsPosterior
 
-  totalTheta <- thetas[keep, iTheta0] * 2 + thetas[keep, iThetaID] * 2
-  colnames(totalTheta) <- colnames(thetas)[iThetaID] # name columns
+  totalThetas <- addThetas(thetas = thetas, iTheta = iTheta, keep = keep)
 
   # evaluate posterior probability of all thetas being positive
   good <- totalTheta > 0 #evaluate their sign
