@@ -4,11 +4,11 @@
 #'
 #' @format A \code{data.frame} of 11245 rows and 7 columns
 #' \describe{
-#'   \item{ID}{Numeric values giving the participant ID: 1-121}
-#'   \item{congruency}{Factor giving one of the two conditions: congruent andincongruent}
+#'   \item{ID}{Factor giving the participant ID: 1-121}
+#'   \item{congruency}{Factor giving one of the two conditions: congruent and incongruent}
 #'   \item{RT}{Numeric values of the response times in milliseconds}
 #'   \item{accuracy}{Numeric values giving the accuracy of the response, here only 1 = correct}
-#'   \item{cond}{Numeric values giving the condition: 1 = congruent, 2 = incongruent}
+#'   \item{cond}{Factor giving the condition: 1 = congruent, 2 = incongruent}
 #'   \item{trial}{Numeric values indicating the trial number of the participant}
 #'   \item{rt}{Numeric values giving the response time in seconds}
 #'   }
