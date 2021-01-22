@@ -20,8 +20,10 @@ constraintBF <- function(formula, data, whichRandom = NULL, ID,
   thetas <- BayesFactor::posterior(generalTestObj, index = indexFullModel, iterations = iterationsPosterior)
 
   # clean names
-  colnames(thetas) <- janitor::make_clean_names(colnames(thetas))
-  ID <- janitor::make_clean_names(ID)
+  colnames(thetas) <- cleanName(colnames(thetas))
+  IDorg <- ID
+  effectNameOrg <- unique(names(whichConstraint))
+  ID <- cleanName(ID)
 
   # get constraints
   constraints <- createConstraints(whichConstraint = whichConstraint)
@@ -37,36 +39,36 @@ constraintBF <- function(formula, data, whichRandom = NULL, ID,
 
   # evaluate posterior probability of all thetas being positive
   constrainedThetas <- estimateConstrainedThetas(totalThetas = totalThetas, cleanConstraints = cleanConstraints)
-  pass <- apply(constrainedThetas, 1, mean) == 1
-  posteriorProbability <- mean(pass)
+  passThetas <- apply(constrainedThetas, 1, mean) == 1
+  posteriorProbability <- mean(passThetas)
 
   # get prior probability of all thetas being positive
-  # set priors
-  a <- 1/2
-  b <- 1/2 * 1/10^2
-  sd_mu <- 1/6
-  I <- length(unique(do.call(`$`, list(x = data, name = ID))))
+  passPrior <- estimatePriorProbability(iTheta = iTheta,
+                                        rscaleEffects = rscaleEffects,
+                                        iterationsPrior = iterationsPrior,
+                                        cleanConstraints = cleanConstraints,
+                                        IDorg = IDorg,
+                                        effectNameOrg = effectNameOrg)
 
-  # simulate
-  s2 <- MCMCpack::rinvgamma(iterationsPrior, a, b)
-  mu <- rcauchy(iterationsPrior, 0, sd_mu)
-  res <- exp(pnorm(0, mu, sqrt(s2), lower.tail = F, log.p = T) * I)
-  priorProb <- mean(res)
+  priorProbability <- mean(passPrior)
 
   # prepare return values
-  bfPU <- postProb / priorProb
-  individualEffects <- colMeans(totalTheta)
-  posteriorSD <- sd(individualEffects)
-  posteriorMean <- mean(thetas[keep, iTheta0])
-
+  bfCU <- posteriorProbability / priorProbability
+  individualEffects <- lapply(totalThetas, colMeans)
+  posteriorSD <- lapply(individualEffects, sd)
+  posteriorMean <- colMeans(thetas[keep, iTheta$commonEffect])
 
   return(list(generalTestObj = generalTestObj,
-              postProb = postProb,
-              priorProb = priorProb,
-              bfPU = bfPU,
+              posteriorProbability = posteriorProbability,
+              priorProbability = priorProbability,
+              bfConstrainedUnconstrained = bfCU,
               individualEffects = individualEffects,
               posteriorSD = posteriorSD,
               posteriorMean = posteriorMean,
-              totalTheta = totalTheta,
-              mcmcFull = thetas[keep, ]))
+              totalThetas = totalThetas,
+              mcmcFull = thetas[keep, ],
+              constraints = constraints,
+              cleanConstraints = cleanConstraints,
+              iTheta = iTheta
+              ))
 }
