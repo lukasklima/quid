@@ -4,6 +4,6 @@ estimateConstrainedThetas <- function(totalThetas = totalThetas, cleanConstraint
   for (i in 1:nrow(cleanConstraints)) {
     X[[i]] <- rlang::expr(totalThetas[[!!cleanConstraints[i, "upper"]]] > totalThetas[[!!cleanConstraints[i, "lower"]]])
   }
-  Y <- reduce(X, ~ rlang::expr(!!.x & !!.y))
+  Y <- purrr::reduce(X, ~ rlang::expr(!!.x & !!.y))
   eval(Y)
 }
