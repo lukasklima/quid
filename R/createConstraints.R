@@ -16,6 +16,7 @@ createConstraints <- function(whichConstraint = whichConstraint) {
 
 createConstraint <- function(whichConstraint = whichConstraint) {
   constraintEffect <- names(whichConstraint) # name of effect
+  constraintEffect <- cleanName(constraintEffect)
   constraintElement <- gsub("\\s", "", whichConstraint[1]) # extract element and remove white spaces
 
   if (grepl("<", constraintElement, fixed = TRUE)) { # condition where effect is expected to be bigger
