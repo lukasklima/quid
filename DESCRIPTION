@@ -16,3 +16,5 @@ LazyData: true
 RoxygenNote: 7.1.1
 Imports: 
     BayesFactor, MCMCpack
+Suggests: 
+    testthat
