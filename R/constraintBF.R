@@ -12,7 +12,9 @@ constraintBF <- function(formula, data, whichRandom = NULL, ID,
 
   # run all models
   generalTestObj <- BayesFactor::generalTestBF(formula = formula, data = data,
-                                               whichRandom = whichRandom, rscaleEffects = rscaleEffects)
+                                               whichRandom = whichRandom,
+                                               rscaleEffects = rscaleEffects,
+                                               ...)
 
   # get index of full model
   indexFullModel <- extractIndexFullModel(generalTestObj)
