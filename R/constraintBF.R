@@ -5,46 +5,10 @@ constraintBF <- function(formula, data, whichRandom, ID,
 
   ## ASSERTIONS
   ellipsis::check_dots_used()
-  if (any(grepl("[[:punct:]]", colnames(data)))) {
-    stop("Data column names must not contain any special characters.", call. = FALSE)
-  }
-
-  if (any(attr(terms(formula, data = data), "order") > 2)) {
-    stop("constraintBF currently only supports interactions of up to 2 terms.", call. = FALSE)
-  }
-
-  # ID
-  checkmate::assertCharacter(ID, len = 1)
-  checkmate::assertChoice(ID, choices = colnames(data))
-  checkmate::assertFactor(do.call(`$`, args = list(x = data, name = ID)), .var.name = "ID column in input data")
-
-
-  # constraints
-  if (length(unique(names(whichConstraint))) != 1) {
-    stop("constraintBF() currently only supports testing constraints on 1 effect.",
-         call. = FALSE)
-  }
-  if (length(whichConstraint) == 0 | is.null(names(whichConstraint))) {
-    stop("constraintBF() can only be used with constraints defined. To perform
-         multiple model comparison without constraints use BayesFactor::generalTestBF().",
-         call. = FALSE)
-  }
-  checkmate::assertNames(names(whichConstraint), subset.of = colnames(data))
-  checkmate::assertFactor(do.call(`$`,
-                                  args = list(x = data, name = unique(names(whichConstraint)))),
-                          .var.name = "constraint column in input data")
-  if (!all((grepl("^[[:alnum:]]+<{1}[[:alnum:]]+$", gsub("\\s", "", whichConstraint)) | grepl("^[[:alnum:]]+>{1}[[:alnum:]]+$", gsub("\\s", "", whichConstraint))))) {
-    stop('whichConstraint must be of the form:
-         \n condition = "control < experimental"
-         \n OR
-         \n condition = "experimental > control"', call. = FALSE)
-  }
-
-  # priors
-  checkmate::assertNames(names(rscaleEffects),
-                         subset.of = attr(terms(formula, data = data), "term.labels"),
-                         must.include = c(ID, unique(names(whichConstraint)), paste0(ID, ":", unique(names(whichConstraint)))))
-  checkmate::assertNumeric(rscaleEffects, lower = 0)
+  checkFormulaData(formula = formula, data = data)
+  checkID(ID = ID, data = data)
+  checkConstraints(whichConstraint = whichConstraint, data = data)
+  checkPriors(rscaleEffects = rscaleEffects, formula = formula, data = data, ID = ID)
 
   # run all models
   generalTestObj <- BayesFactor::generalTestBF(formula = formula, data = data,
