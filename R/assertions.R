@@ -1,7 +1,9 @@
 # ASSERTIONS
 checkFormulaData <- function(formula = formula, data = data) {
   if (any(grepl("[[:punct:]]", colnames(data)))) {
-    stop("Data column names must not contain any special characters.", call. = FALSE)
+    stop("Data column names must not contain any special characters.",
+         "\n Check columns: \n", paste0("✖ ", colnames(data)[grepl("[[:punct:]]", colnames(data))], "\n"),
+         call. = FALSE)
   }
   if (any(attr(terms(formula, data = data), "order") > 2)) {
     stop("constraintBF currently only supports interactions of up to 2 terms.", call. = FALSE)
@@ -15,7 +17,7 @@ checkID <- function(ID = ID, data = data) {
 }
 
 checkConstraints <- function(whichConstraint = whichConstraint, data = data) {
-  if (length(unique(names(whichConstraint))) != 1) {
+  if (length(unique(names(whichConstraint))) > 1) {
     stop("constraintBF() currently only supports testing constraints on 1 effect.",
          call. = FALSE)
   }
@@ -40,9 +42,14 @@ constraintsConform <- function(whichConstraint = whichConstraint) {
   all((grepl("^[[:alnum:]]+<{1}[[:alnum:]]+$", gsub("\\s", "", whichConstraint)) | grepl("^[[:alnum:]]+>{1}[[:alnum:]]+$", gsub("\\s", "", whichConstraint))))
 }
 
-checkPriors <- function(rscaleEffects = rscaleEffects, formula = formula, data = data, ID = ID) {
+checkPriors <- function(rscaleEffects = rscaleEffects, formula = formula,
+                        data = data, ID = ID, whichConstraint = whichConstraint) {
+  interactionTerms <- c(paste0(ID, ":", unique(names(whichConstraint))), paste0(paste0(unique(names(whichConstraint)), ":", ID)))
+  whichTerm <- interactionTerms %in% attr(terms(formula, data = data), "term.labels")
+  interactionTerms <- interactionTerms[whichTerm]
+
   checkmate::assertNames(names(rscaleEffects),
                          subset.of = attr(terms(formula, data = data), "term.labels"),
-                         must.include = c(ID, unique(names(whichConstraint)), paste0(ID, ":", unique(names(whichConstraint)))))
+                         must.include = c(ID, unique(names(whichConstraint)), interactionTerms))
   checkmate::assertNumeric(rscaleEffects, lower = 0)
 }

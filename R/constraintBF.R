@@ -3,12 +3,12 @@ constraintBF <- function(formula, data, whichRandom, ID,
                         iterationsPosterior = 10000, iterationsPrior = iterationsPosterior * 10,
                         burnin = 1000, ...) {
 
-  ## ASSERTIONS
+  # Assertions
   ellipsis::check_dots_used()
   checkFormulaData(formula = formula, data = data)
   checkID(ID = ID, data = data)
   checkConstraints(whichConstraint = whichConstraint, data = data)
-  checkPriors(rscaleEffects = rscaleEffects, formula = formula, data = data, ID = ID)
+  checkPriors(rscaleEffects = rscaleEffects, formula = formula, data = data, ID = ID, whichConstraint = whichConstraint)
 
   # run all models
   generalTestObj <- BayesFactor::generalTestBF(formula = formula, data = data,
