@@ -1,8 +1,5 @@
 createConstraints <- function(whichConstraint = whichConstraint) {
-  if (length(whichConstraint) == 0) {
-    stop("constraintBF can only be used with constraints defined. To perform
-         multiple model comparison without constraints use BayesFactor::generalTestBF().")
-  } else if (length(whichConstraint) == 1) {
+  if (length(whichConstraint) == 1) {
     createConstraint(whichConstraint = whichConstraint)
   } else if (length(whichConstraint) > 1) {
     constraints <- data.frame()

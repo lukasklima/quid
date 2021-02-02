@@ -2,10 +2,6 @@ extractIndeces <- function(constraints = constraints, thetas = thetas, ID = ID, 
   effectName <- unique(constraints$constraintEffect)
   effectName <- cleanName(effectName)
 
-  if (length(effectName) > 1) {
-    stop("constraintBF currently only supports testing constraints of 1 effect")
-  }
-
   # get all unique values of relevant factors
   colnames(data) <- cleanName(colnames(data))
 
