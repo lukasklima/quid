@@ -2,7 +2,7 @@
 checkFormulaData <- function(formula = formula, data = data) {
   if (any(grepl("[[:punct:]]", colnames(data)))) {
     stop("Data column names must not contain any special characters.",
-         "\n Check columns: \n", paste0("✖ ", colnames(data)[grepl("[[:punct:]]", colnames(data))], "\n"),
+         "\n Check columns: \n", paste0("\u2716 ", colnames(data)[grepl("[[:punct:]]", colnames(data))], "\n"),
          call. = FALSE)
   }
   if (any(attr(terms(formula, data = data), "order") > 2)) {
@@ -57,8 +57,9 @@ checkPriors <- function(rscaleEffects = rscaleEffects, formula = formula,
 checkIterations <- function(iterationsPosterior = iterationsPosterior, burnin = burnin) {
   if (burnin > iterationsPosterior) {
     stop(" 'iterationsPosterior' must be bigger than 'burnin'.
-         \n ✖ 'iterationsPosterior' is ", iterationsPosterior,
-         "\n ✖ 'burnin' is ", burnin)
+         \n \u2716 'iterationsPosterior' is ", iterationsPosterior,
+         "\n \u2716 'burnin' is ", burnin, call. = FALSE)
   }
 }
 
+stringi::stri_escape_unicode("✖")
