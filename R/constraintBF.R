@@ -9,6 +9,7 @@ constraintBF <- function(formula, data, whichRandom, ID,
   checkID(ID = ID, data = data)
   checkConstraints(whichConstraint = whichConstraint, data = data)
   checkPriors(rscaleEffects = rscaleEffects, formula = formula, data = data, ID = ID, whichConstraint = whichConstraint)
+  checkIterations(iterationsPosterior = iterationsPosterior, burnin = burnin)
 
   # run all models
   generalTestObj <- BayesFactor::generalTestBF(formula = formula, data = data,

@@ -53,3 +53,12 @@ checkPriors <- function(rscaleEffects = rscaleEffects, formula = formula,
                          must.include = c(ID, unique(names(whichConstraint)), interactionTerms))
   checkmate::assertNumeric(rscaleEffects, lower = 0)
 }
+
+checkIterations <- function(iterationsPosterior = iterationsPosterior, burnin = burnin) {
+  if (burnin > iterationsPosterior) {
+    stop(" 'iterationsPosterior' must be bigger than 'burnin'.
+         \n ✖ 'iterationsPosterior' is ", iterationsPosterior,
+         "\n ✖ 'burnin' is ", burnin)
+  }
+}
+
