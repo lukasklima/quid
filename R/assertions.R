@@ -61,5 +61,3 @@ checkIterations <- function(iterationsPosterior = iterationsPosterior, burnin = 
          "\n \u2716 'burnin' is ", burnin, call. = FALSE)
   }
 }
-
-stringi::stri_escape_unicode("✖")
