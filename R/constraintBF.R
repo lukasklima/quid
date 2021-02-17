@@ -58,21 +58,25 @@ constraintBF <- function(formula, data, whichRandom, ID,
   # prepare return values
   bfCU <- posteriorProbability / priorProbability
   individualEffects <- lapply(totalThetas, colMeans)
-  posteriorSD <- lapply(individualEffects, sd)
+  posteriorSD <- sapply(individualEffects, sd)
   posteriorMean <- colMeans(thetas[keep, iTheta$commonEffect])
 
-  return(list(generalTestObj = generalTestObj,
-              posteriorProbability = posteriorProbability,
-              priorProbability = priorProbability,
-              bfConstrainedUnconstrained = bfCU,
-              individualEffects = individualEffects,
-              posteriorSD = posteriorSD,
-              posteriorMean = posteriorMean,
-              totalThetas = totalThetas,
-              mcmcFull = thetas[keep, ],
-              constraints = constraints,
-              cleanConstraints = cleanConstraints,
-              iTheta = iTheta
-              ))
-}
+  # make S4 objects
+  newConstraint <- BFConstraint(priorProbability = priorProbability,
+                                posteriorProbability = posteriorProbability,
+                                bayesFactor = bfCU,
+                                constraints = constraints,
+                                cleanConstraints = cleanConstraints)
 
+
+  newBFConstraint <- BFBayesFactorConstraint(generalTestObj = generalTestObj,
+                                             constraints = newConstraint,
+                                             individualEffects = individualEffects,
+                                             posteriorMean = posteriorMean,
+                                             posteriorSD = posteriorSD,
+                                             totalThetas = totalThetas,
+                                             mcmcFull = thetas[keep, ],
+                                             designIndeces = iTheta)
+
+  return(newBFConstraint)
+}

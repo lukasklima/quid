@@ -5,7 +5,7 @@ extractIndeces <- function(constraints = constraints, thetas = thetas, ID = ID, 
   # get all unique values of relevant factors
   colnames(data) <- cleanName(colnames(data))
 
-  effectLevels <- sort(unique(c(constraints$constraintUpper, constraints$constraintLower)))
+  effectLevels <- as.factor(sort(unique(c(constraints$constraintUpper, constraints$constraintLower))))
   IDLevels <- unique(do.call(`$`, args = list(x = data, name = ID)))
 
   # common effect
