@@ -54,7 +54,7 @@ setMethod("show", "BFBayesFactorConstraint", function(object) {
   consLow <- object@constraints@constraints[["constraintLower"]]
   consUp <- object@constraints@constraints[["constraintUpper"]]
   maxwidth <- max(nchar(consLow))
-  consLow <- str_pad(consLow, maxwidth, side="right", pad=" ")
+  consLow <- stringr::str_pad(consLow, maxwidth, side="right", pad=" ")
 
   cat("\nConstraints defined: \n")
   for(i in 1:nrow(object@constraints@constraints)) {
