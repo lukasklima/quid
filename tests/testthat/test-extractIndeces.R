@@ -19,6 +19,6 @@ test_that("weird input extracts indeces", {
                list(commonEffect = c(condition_bigger = 1, condition_smaller = 2),
                     indEffect = indEffect,
                     IDLevels = 1:3,
-                    effectLevels = c("bigger", "smaller"))
+                    effectLevels = as.factor(c("bigger", "smaller")))
   )
 })
