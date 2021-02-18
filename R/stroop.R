@@ -6,11 +6,11 @@
 #' \describe{
 #'   \item{ID}{Factor giving the participant ID: 1-121}
 #'   \item{congruency}{Factor giving one of the two conditions: congruent and incongruent}
-#'   \item{RT}{Numeric values of the response times in milliseconds}
+#'   \item{rtMS}{Numeric values of the response times in milliseconds}
 #'   \item{accuracy}{Numeric values giving the accuracy of the response, here only 1 = correct}
 #'   \item{cond}{Factor giving the condition: 1 = congruent, 2 = incongruent}
 #'   \item{trial}{Numeric values indicating the trial number of the participant}
-#'   \item{rt}{Numeric values giving the response time in seconds}
+#'   \item{rtS}{Numeric values giving the response time in seconds}
 #'   }
 #'
 #' @source Von Bastian, C. C., Souza, A. S., & Gade, M. (2016). No evidence for

@@ -8,6 +8,12 @@ checkFormulaData <- function(formula = formula, data = data) {
   if (any(attr(terms(formula, data = data), "order") > 2)) {
     stop("constraintBF currently only supports interactions of up to 2 terms.", call. = FALSE)
   }
+  smallNames <- tolower(colnames(data))
+  same <- duplicated(smallNames) | duplicated(smallNames, fromLast = TRUE)
+  if (any(same)) {
+    stop("Data column names are not case sensitive and must be unique values.",
+         "\n Check columns: \n", paste0("\u2716 ", colnames(data)[same], "\n"))
+  }
 }
 
 checkID <- function(ID = ID, data = data) {
