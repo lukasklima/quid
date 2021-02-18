@@ -40,10 +40,10 @@ setMethod("show", "BFBayesFactorConstraint", function(object) {
   cat("=========================\n\nConstraints analysis\n--------------\n")
 
   # pad bfs
-  nms <- c("Prior probability", "Posterior probability", "Bayes factor")
+  nms <- c("Bayes factor", "Posterior probability", "Prior probability")
   maxwidth <- max(nchar(nms))
   nms <- stringr::str_pad(nms, maxwidth, side="right", pad=" ")
-  values <- c(object@constraints@priorProbability, object@constraints@posteriorProbability, object@constraints@bayesFactor)
+  values <- c(object@constraints@bayesFactor, object@constraints@posteriorProbability, object@constraints@priorProbability)
 
   for (b in seq_along(nms)) {
     cat(nms[b], " : ", values[b], "\n", sep = "")
