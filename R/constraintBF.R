@@ -33,7 +33,7 @@ constraintBF <- function(formula, data, whichRandom, ID,
   cleanConstraints <- createCleanConstraints(constraints = constraints)
 
   # get indeces for posterior
-  iTheta <- extractIndeces(constraints = constraints, thetas = thetas, ID = ID, data = data)
+  iTheta <- extractIndeces(constraints = constraints, thetas = thetas, ID = ID, data = data, formula = formula)
 
   # add overall effect to individuals' deviations
   keep <- (burnin + 1) : iterationsPosterior

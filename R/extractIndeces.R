@@ -1,4 +1,4 @@
-extractIndeces <- function(constraints = constraints, thetas = thetas, ID = ID, data = data) {
+extractIndeces <- function(constraints = constraints, thetas = thetas, ID = ID, data = data, formula = formula) {
   effectName <- unique(constraints$constraintEffect)
   effectName <- cleanName(effectName)
 
@@ -14,7 +14,7 @@ extractIndeces <- function(constraints = constraints, thetas = thetas, ID = ID, 
   names(iTheta0) <- paste0(effectName, "_", effectLevels)
 
   # individual effects
-  regexThetaID <- crossRegex(IDLevels = IDLevels, effectLevels = effectLevels, ID = ID, effectName = effectName)
+  regexThetaID <- crossRegex(IDLevels = IDLevels, effectLevels = effectLevels, ID = ID, effectName = effectName, formula = formula)
   iThetaID <- apply(regexThetaID, MARGIN = c(1, 2), function(pat) grep(pattern = pat, x = colnames(thetas)))
 
   return(list(commonEffect = iTheta0,
