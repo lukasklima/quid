@@ -15,7 +15,7 @@ test_that("weird input extracts indeces", {
   indEffect <- matrix(3:8, ncol = 2, byrow = FALSE)
   colnames(indEffect) <- c("condition_bigger", "condition_smaller")
 
-  expect_equal(extractIndeces(constraints = constraints, thetas = thetas, ID = ID, data = data),
+  expect_equal(extractIndeces(constraints = constraints, thetas = thetas, ID = ID, data = data, formula = rt ~ subject * condition),
                list(commonEffect = c(condition_bigger = 1, condition_smaller = 2),
                     indEffect = indEffect,
                     IDLevels = 1:3,

@@ -1,4 +1,4 @@
-extractIndeces <- function(constraints = constraints, thetas = thetas, ID = ID, data = data, formula = formula) {
+extractIndeces <- function(constraints, thetas, ID, data, formula) {
   effectName <- unique(constraints$constraintEffect)
   effectName <- cleanName(effectName)
 

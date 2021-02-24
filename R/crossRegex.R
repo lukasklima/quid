@@ -1,4 +1,4 @@
-crossRegex <- function(IDLevels = IDLevels, effectLevels = effectLevels, ID = ID, effectName = effectName, formula = formula) {
+crossRegex <- function(IDLevels, effectLevels, ID, effectName, formula) {
 
   trms <- attr(terms(formula), "term.labels")
   trms <- cleanName(trms)
