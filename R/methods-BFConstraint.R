@@ -35,9 +35,7 @@ BFBayesFactorConstraint <- function(generalTestObj,
 
 setMethod("show", "BFBayesFactorConstraint", function(object) {
   cat("\n")
-  show(object@generalTestObj)
-
-  cat("=========================\n\nConstraints analysis\n--------------\n")
+  cat("Constraints analysis\n--------------\n")
 
   # pad bfs
   nms <- c("Bayes factor", "Posterior probability", "Prior probability")
@@ -61,5 +59,6 @@ setMethod("show", "BFBayesFactorConstraint", function(object) {
     cat(" ", ef[i], " : ", consLow[i], " < ", consUp[i], "\n", sep = "")
   }
 
-  cat("\n\n")
+  cat("\n=========================\n\n")
+  show(object@generalTestObj)
 })
