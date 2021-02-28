@@ -29,7 +29,6 @@ plotEffects <- function(x, .raw = FALSE) {
     ggplot2::theme_light() +
     ggplot2::theme(panel.grid.major = element_blank(),
                    panel.grid.minor = element_blank())
-
 }
 
 # Calculate differences between conditions specified in constraints
@@ -56,6 +55,3 @@ calculateDifferences <- function(x, effect = c("estimate", "observed")) {
 
   return(Y)
 }
-
-
-
