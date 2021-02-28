@@ -17,5 +17,6 @@ setClass("BFBayesFactorConstraint",
            posteriorSD = "numeric",
            totalThetas = "list",
            mcmcFull = "matrix",
-           designIndeces = "list")
+           designIndeces = "list",
+           observedEffects = "list")
 )

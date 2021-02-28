@@ -1,4 +1,4 @@
-extractIndeces <- function(constraints, thetas, ID, data, formula) {
+extractIndeces <- function(constraints, thetas, ID, data, formula, IDorg) {
   effectName <- unique(constraints$constraintEffect)
   effectName <- cleanName(effectName)
 
@@ -20,6 +20,7 @@ extractIndeces <- function(constraints, thetas, ID, data, formula) {
   return(list(commonEffect = iTheta0,
               indEffect = iThetaID,
               IDLevels = IDLevels,
-              effectLevels = effectLevels
+              effectLevels = effectLevels,
+              ID = IDorg
               ))
 }

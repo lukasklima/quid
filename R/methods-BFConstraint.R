@@ -20,7 +20,8 @@ BFBayesFactorConstraint <- function(generalTestObj,
                                     posteriorSD,
                                     totalThetas,
                                     mcmcFull,
-                                    designIndeces) {
+                                    designIndeces,
+                                    observedEffects) {
   new("BFBayesFactorConstraint",
       generalTestObj = generalTestObj,
       constraints = constraints,
@@ -29,7 +30,8 @@ BFBayesFactorConstraint <- function(generalTestObj,
       posteriorSD = posteriorSD,
       totalThetas = totalThetas,
       mcmcFull = mcmcFull,
-      designIndeces = designIndeces
+      designIndeces = designIndeces,
+      observedEffects = observedEffects
   )
 }
 

@@ -1,3 +1,20 @@
+#' Title
+#'
+#' @param formula
+#' @param data
+#' @param whichRandom
+#' @param ID
+#' @param whichConstraint
+#' @param rscaleEffects
+#' @param iterationsPosterior
+#' @param iterationsPrior
+#' @param burnin
+#' @param ...
+#'
+#' @return
+#' @export
+#'
+#' @examples
 constraintBF <- function(formula, data, whichRandom, ID,
                         whichConstraint, rscaleEffects,
                         iterationsPosterior = 10000, iterationsPrior = iterationsPosterior * 10,
@@ -33,7 +50,12 @@ constraintBF <- function(formula, data, whichRandom, ID,
   cleanConstraints <- createCleanConstraints(constraints = constraints)
 
   # get indeces for posterior
-  iTheta <- extractIndeces(constraints = constraints, thetas = thetas, ID = ID, data = data, formula = formula)
+  iTheta <- extractIndeces(constraints = constraints,
+                           thetas = thetas,
+                           ID = ID,
+                           data = data,
+                           formula = formula,
+                           IDorg = IDorg)
 
   # add overall effect to individuals' deviations
   keep <- (burnin + 1) : iterationsPosterior
@@ -60,6 +82,12 @@ constraintBF <- function(formula, data, whichRandom, ID,
   individualEffects <- lapply(totalThetas, colMeans)
   posteriorSD <- sapply(individualEffects, sd)
   posteriorMean <- colMeans(thetas[keep, iTheta$commonEffect])
+  observedEffects <- calculateObservedEffects(constraints = constraints,
+                                              data = data,
+                                              IDorg = IDorg,
+                                              iTheta = iTheta,
+                                              formula = formula,
+                                              effectNameOrg = effectNameOrg)
 
   # make S4 objects
   newConstraint <- BFConstraint(priorProbability = priorProbability,
@@ -76,7 +104,8 @@ constraintBF <- function(formula, data, whichRandom, ID,
                                              posteriorSD = posteriorSD,
                                              totalThetas = totalThetas,
                                              mcmcFull = thetas[keep, ],
-                                             designIndeces = iTheta)
+                                             designIndeces = iTheta,
+                                             observedEffects = observedEffects)
 
   return(newBFConstraint)
 }
