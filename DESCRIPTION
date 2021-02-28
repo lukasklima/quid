@@ -23,6 +23,7 @@ Imports:
     purrr,
     rlang,
     stringr,
-    methods
+    methods,
+    magrittr
 Suggests: 
     testthat
