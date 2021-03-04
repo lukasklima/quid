@@ -11,7 +11,7 @@ estimatePriorProbability <- function(iTheta = iTheta,
   indEffect <- grep(regexEffect, names(rscaleEffects))
 
   # nLevels is projected onto n-1 levels by use of the following projection matrix
-  params <- BayesFactor:::fixedFromRandomProjection(nLevels, sparse = FALSE)
+  params <- fixedFromRandomProjection(nLevels, sparse = FALSE)
 
   # sample n main effects m times
   mus <- matrix(nrow = iterationsPrior, ncol = ncol(params))
@@ -48,4 +48,11 @@ estimatePriorProbability <- function(iTheta = iTheta,
     pass[m] <- sum(constrainedPrior) == I
   }
   return(pass)
+}
+
+# BayesFactor:::fixedFromRandomProjection
+fixedFromRandomProjection <- function (nlevRandom, sparse = FALSE) {
+  centering = diag(nlevRandom) - (1/nlevRandom)
+  S = as.vector((eigen(centering)$vectors)[, 1:(nlevRandom - 1)])
+  return(Matrix(S, nrow = nlevRandom, sparse = sparse))
 }
