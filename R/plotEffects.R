@@ -27,8 +27,8 @@ plotEffects <- function(x, .raw = FALSE) {
     ggplot2::scale_x_continuous(name = "Individual", breaks = c(min(Y$ordering), max(Y$ordering))) +
     ggplot2::ylab("Effect") +
     ggplot2::theme_light() +
-    ggplot2::theme(panel.grid.major = element_blank(),
-                   panel.grid.minor = element_blank())
+    ggplot2::theme(panel.grid.major = ggplot2::element_blank(),
+                   panel.grid.minor = ggplot2::element_blank())
 }
 
 # Calculate differences between conditions specified in constraints
