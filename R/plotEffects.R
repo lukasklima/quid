@@ -1,4 +1,24 @@
 # plotting of observed vs estimated individual effects
+#' Plot a BFBayesFactorConstraint object
+#'
+#' Plots observed vs estimated individual effects for each level of the effect
+#'   for which constraints are defined.
+#'
+#' @param x an object of class \code{\link{BFBayesFactorConstraint}}.
+#' @param .raw if \code{FALSE}, outputs the plot. If \code{TRUE} returns the
+#'   \code{data.frame} that is used for making the plot.
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' data(stroop)
+#'
+#' resStroop <- constraintBF(rtS ~ ID*cond, data = stroop, whichRandom = "ID", ID = "ID", whichConstraint = c(cond = "2 > 1"), rscaleEffects = c("ID" = 1, "cond" = 1/6, "ID:cond" = 1/10), iterationsPosterior = 100, burnin = 1)
+#'
+#' plotEffects(resStroop)
+#' }
+#'
 plotEffects <- function(x, .raw = FALSE) {
   estimates <- calculateDifferences(x, effect = "estimate")
   observed <- calculateDifferences(x, effect = "observed")
@@ -31,7 +51,31 @@ plotEffects <- function(x, .raw = FALSE) {
                    panel.grid.minor = ggplot2::element_blank())
 }
 
-# Calculate differences between conditions specified in constraints
+#' Calculate differences between conditions specified in constraints
+#'
+#' Calculates the differences between the conditions specified in the constraints
+#'   of a \code{BFBayesFactorConstraint} object for each individual.
+#'
+#' @param x an object of class \code{\link{BFBayesFactorConstraint}}.
+#' @param effect the effect differences to be calculated. \code{effect = "estimate"}
+#'   computes the effect differences from the model estimates;
+#'   \code{effect = "observed"} computes the observed effect differences.
+#'
+#' @return \code{calculateDifferences} returns an object of class
+#'   \code{\link[tibble]{tbl_df}}, with columns for ID, type of effect,
+#'   specified constraint, and estimates.
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' data(stroop)
+#'
+#' resStroop <- constraintBF(rtS ~ ID*cond, data = stroop, whichRandom = "ID", ID = "ID", whichConstraint = c(cond = "2 > 1"), rscaleEffects = c("ID" = 1, "cond" = 1/6, "ID:cond" = 1/10), iterationsPosterior = 100, burnin = 1)
+#'
+#' calculateDifferences(resStroop, effect = "estimate")
+#' calculateDifferences(resStroop, effect = "observed")
+#' }
+#'
 calculateDifferences <- function(x, effect = c("estimate", "observed")) {
   checkmate::assertChoice(effect, choices = c("estimate", "observed"))
 

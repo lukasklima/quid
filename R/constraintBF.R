@@ -1,20 +1,70 @@
-#' Title
+#' Function to compute Bayes factors for ordinal constraints
 #'
-#' @param formula
-#' @param data
-#' @param whichRandom
-#' @param ID
-#' @param whichConstraint
-#' @param rscaleEffects
-#' @param iterationsPosterior
-#' @param iterationsPrior
-#' @param burnin
-#' @param ...
+#' This function uses Bayesian mixed models to estimate individual effect
+#' sizes and to test theoretical order constraints.
 #'
-#' @return
+#' This function provides a way of testing whether theoretical constraints on
+#' certain effects hold for all subjects. The backend is provided by the
+#' \code{\link[BayesFactor]{generalTestBF}} function from the
+#' \code{\link[BayesFactor]{BayesFactor-package}}. The input formula is the
+#' full model to be tested. It usually contains an interaction term between
+#' the subject ID and the effect for which constraints are tested (e.g.
+#' \code{ID:condition}. The ID variable is to be specified in \code{ID} and is
+#' usually a random factor to be specified in \code{whichRandom}.
+#'
+#' Order constraints on effects should be specified in \code{whichConstraint},
+#' as a named character vector. Each constraint in the vector can take 2 levels
+#' of the effect. They are of the form:
+#' \code{"effect name" = "condition A" < "condition B"}. In order to impute more
+#' than 2 levels, the same effect name has to be entered with different conditions
+#' as the value. For instance, for testing whether conditions A < B < C, the
+#' input should be: \code{"effect name" = "condition A" < "condition B", "effect name" = "condition B" < "condition C"}.
+#' At this point, constraints can only be tested for the same effect.
+#'
+#' Priors have to be specified for all factors in \code{whichConstraint},
+#' for \code{ID}, and for the interaction between the two. A Detailed description
+#' of the models, priors and methods is given in the documentation of
+#' \code{\link[BayesFactor]{anovaBF}} and more extensively in Rouder et al. (2012).
+#'
+#' @param formula a formula containing the full model.
+#' @param data a \code{data.frame} containing the data with all variables
+#'   defined in the formula.
+#' @param whichRandom a character vector specifying which factors are random.
+#' @param ID a character vector of length one specifying which variable
+#'   holds the subject ID.
+#' @param whichConstraint a named character vector specifying the constraints
+#'   placed on certain factors; see Details.
+#' @param rscaleEffects a named vector of prior settings for individual factors.
+#'   Values are scales, names are factor names; see Details.
+#' @param iterationsPosterior the number of iterations to sample from the
+#'  posterior of the full model.
+#' @param iterationsPrior the number of iterations to sample from the
+#'  prior of the full model.
+#' @param burnin the number of initial iterations to discard from posterior
+#'   sampling.
+#' @param ... further arguments to be passed to
+#'   \code{\link[BayesFactor]{generalTestBF}}.
+#'
+#' @return An object of class \code{\link{BFBayesFactorConstraint}}.
+#'
+#' @references Rouder, J. N., Morey, R. D., Speckman, P. L., Province, J. M., (2012)
+##'   Default Bayes Factors for ANOVA Designs. Journal of Mathematical
+##'   Psychology.  56.  p. 356-374.
+#'
 #' @export
 #'
 #' @examples
+#' \dontrun{
+#' data(stroop)
+#'
+#' resStroop <- constraintBF(rtS ~ ID*cond,
+#'                           data = stroop,
+#'                           whichRandom = "ID",
+#'                           ID = "ID",
+#'                           whichConstraint = c(cond = "2 > 1"),
+#'                           rscaleEffects = c("ID" = 1, "cond" = 1/6, "ID:cond" = 1/10)
+#' }
+#'
 constraintBF <- function(formula, data, whichRandom, ID,
                         whichConstraint, rscaleEffects,
                         iterationsPosterior = 10000, iterationsPrior = iterationsPosterior * 10,
@@ -103,7 +153,7 @@ constraintBF <- function(formula, data, whichRandom, ID,
                                              posteriorMean = posteriorMean,
                                              posteriorSD = posteriorSD,
                                              totalThetas = totalThetas,
-                                             mcmcFull = thetas[keep, ],
+                                             mcmcFull = thetas,
                                              designIndeces = iTheta,
                                              observedEffects = observedEffects)
 
