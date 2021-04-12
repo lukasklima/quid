@@ -17,9 +17,9 @@
 \describe{
 \item{\code{generalTestObj}}{an object of class \code{BFBayesFactor} representing the
 model comparisons. All S4 methods as defined in
-\code{\link[BayesFactor]{BFBayesFactor}} can be used.}
+\code{\link[BayesFactor]{BFBayesFactor-class}} can be used.}
 
-\item{\code{constraints}}{an object of class \code{\link{BFConstraint}}.}
+\item{\code{constraints}}{an object of class \code{\link{BFConstraint-class}}.}
 
 \item{\code{individualEffects}}{a list containing a named vector for each level of the
 effect defined in the constraints. Effects are comprised of the common

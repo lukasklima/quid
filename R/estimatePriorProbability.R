@@ -54,5 +54,5 @@ estimatePriorProbability <- function(iTheta = iTheta,
 fixedFromRandomProjection <- function (nlevRandom, sparse = FALSE) {
   centering = diag(nlevRandom) - (1/nlevRandom)
   S = as.vector((eigen(centering)$vectors)[, 1:(nlevRandom - 1)])
-  return(Matrix(S, nrow = nlevRandom, sparse = sparse))
+  return(Matrix::Matrix(S, nrow = nlevRandom, sparse = sparse))
 }

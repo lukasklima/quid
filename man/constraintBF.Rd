@@ -47,7 +47,7 @@ sampling.}
 \code{\link[BayesFactor]{generalTestBF}}.}
 }
 \value{
-An object of class \code{\link{BFBayesFactorConstraint}}.
+An object of class \code{\link{BFBayesFactorConstraint-class}}.
 }
 \description{
 This function uses Bayesian mixed models to estimate individual effect
@@ -86,7 +86,7 @@ resStroop <- constraintBF(rtS ~ ID*cond,
                           whichRandom = "ID",
                           ID = "ID",
                           whichConstraint = c(cond = "2 > 1"),
-                          rscaleEffects = c("ID" = 1, "cond" = 1/6, "ID:cond" = 1/10)
+                          rscaleEffects = c("ID" = 1, "cond" = 1/6, "ID:cond" = 1/10))
 }
 
 }

@@ -1,3 +1,5 @@
+setOldClass("mcmc")
+
 #' S4 class for representing constraints
 #'
 #' \code{BFConstraint} is a S4 class that represents the input and output of
@@ -12,6 +14,8 @@
 #' @slot constraints a data frame containing the specified constraints.
 #' @slot cleanConstraints A data frame containing the specified constraints as
 #'   they are presented by \code{\link{constraintBF}}.
+#'
+#' @importFrom methods show slot
 #'
 #' @export
 #'
@@ -36,8 +40,8 @@ setClass("BFConstraint",
 #'
 #' @slot generalTestObj an object of class \code{BFBayesFactor} representing the
 #'   model comparisons. All S4 methods as defined in
-#'   \code{\link[BayesFactor]{BFBayesFactor}} can be used.
-#' @slot constraints an object of class \code{\link{BFConstraint}}.
+#'   \code{\link[BayesFactor]{BFBayesFactor-class}} can be used.
+#' @slot constraints an object of class \code{\link{BFConstraint-class}}.
 #' @slot individualEffects a list containing a named vector for each level of the
 #'   effect defined in the constraints. Effects are comprised of the common
 #'   effect plus the individual deviation from it.
@@ -55,6 +59,9 @@ setClass("BFConstraint",
 #'   effect defined in the constraints. Values are the mean observed effect for
 #'   each individual.
 #'
+#'@importClassesFrom BayesFactor BFBayesFactor
+#' @importFrom methods show slot
+#'
 #' @export
 #'
 setClass("BFBayesFactorConstraint",
@@ -65,7 +72,7 @@ setClass("BFBayesFactorConstraint",
            posteriorMean = "numeric",
            posteriorSD = "numeric",
            totalThetas = "list",
-           mcmcFull = "BFmcmc",
+           mcmcFull = "mcmc",
            designIndeces = "list",
            observedEffects = "list")
 )

@@ -24,6 +24,12 @@ Imports:
     rlang,
     stringr,
     methods,
-    magrittr
+    magrittr,
+    dplyr,
+    ggplot2,
+    tibble,
+    tidyr,
+    tidyselect,
+    Matrix
 Suggests: 
     testthat

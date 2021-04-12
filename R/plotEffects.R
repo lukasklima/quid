@@ -4,7 +4,7 @@
 #' Plots observed vs estimated individual effects for each level of the effect
 #'   for which constraints are defined.
 #'
-#' @param x an object of class \code{\link{BFBayesFactorConstraint}}.
+#' @param x an object of class \code{\link{BFBayesFactorConstraint-class}}.
 #' @param .raw if \code{FALSE}, outputs the plot. If \code{TRUE} returns the
 #'   \code{data.frame} that is used for making the plot.
 #'
@@ -14,7 +14,12 @@
 #' \dontrun{
 #' data(stroop)
 #'
-#' resStroop <- constraintBF(rtS ~ ID*cond, data = stroop, whichRandom = "ID", ID = "ID", whichConstraint = c(cond = "2 > 1"), rscaleEffects = c("ID" = 1, "cond" = 1/6, "ID:cond" = 1/10), iterationsPosterior = 100, burnin = 1)
+#' resStroop <- constraintBF(rtS ~ ID*cond,
+#'                           data = stroop,
+#'                           whichRandom = "ID",
+#'                           ID = "ID",
+#'                           whichConstraint = c(cond = "2 > 1"),
+#'                           rscaleEffects = c("ID" = 1, "cond" = 1/6, "ID:cond" = 1/10))
 #'
 #' plotEffects(resStroop)
 #' }
@@ -24,24 +29,24 @@ plotEffects <- function(x, .raw = FALSE) {
   observed <- calculateDifferences(x, effect = "observed")
 
   observed <- observed %>%
-    dplyr::arrange(differences, estimate) %>%
-    dplyr::mutate(ordering = rep(1:length(levels(individual)), length.out = length(observed$differences)))
+    dplyr::arrange(.data$differences, .data$estimate) %>%
+    dplyr::mutate(ordering = rep(1:length(levels(.data$individual)), length.out = length(observed$differences)))
 
   estimates <- observed %>%
-    dplyr::select(individual, differences, ordering) %>%
+    dplyr::select(.data$individual, .data$differences, .data$ordering) %>%
     dplyr::inner_join(estimates, by = c("individual", "differences"))
 
   Y <- dplyr::bind_rows(observed, estimates) %>%
-    dplyr::mutate(effect = factor(effect, levels = c("observed", "estimate"), labels = c("Observed effect", "Effect parameter"))) %>%
-    dplyr::mutate(differences = factor(differences))
+    dplyr::mutate(effect = factor(.data$effect, levels = c("observed", "estimate"), labels = c("Observed effect", "Effect parameter"))) %>%
+    dplyr::mutate(differences = factor(.data$differences))
 
   if(.raw) {
     return(Y)
   }
 
-  ggplot2::ggplot(data = Y, mapping = ggplot2::aes(x = ordering, y = estimate)) +
-    ggplot2::geom_point(ggplot2::aes(colour = estimate > 0), show.legend = FALSE) +
-    ggplot2::facet_grid(differences ~ effect) +
+  ggplot2::ggplot(data = Y, mapping = ggplot2::aes(x = .data$ordering, y = .data$estimate)) +
+    ggplot2::geom_point(ggplot2::aes(colour = .data$estimate > 0), show.legend = FALSE) +
+    ggplot2::facet_grid(.data$differences ~ .data$effect) +
     ggplot2::geom_hline(yintercept = 0, colour = "grey70") +
     ggplot2::scale_colour_manual(values = c("#FC4E07", "#00AFBB")) +
     ggplot2::scale_x_continuous(name = "Individual", breaks = c(min(Y$ordering), max(Y$ordering))) +
@@ -56,7 +61,7 @@ plotEffects <- function(x, .raw = FALSE) {
 #' Calculates the differences between the conditions specified in the constraints
 #'   of a \code{BFBayesFactorConstraint} object for each individual.
 #'
-#' @param x an object of class \code{\link{BFBayesFactorConstraint}}.
+#' @param x an object of class \code{\link{BFBayesFactorConstraint-class}}.
 #' @param effect the effect differences to be calculated. \code{effect = "estimate"}
 #'   computes the effect differences from the model estimates;
 #'   \code{effect = "observed"} computes the observed effect differences.
@@ -70,7 +75,12 @@ plotEffects <- function(x, .raw = FALSE) {
 #' \dontrun{
 #' data(stroop)
 #'
-#' resStroop <- constraintBF(rtS ~ ID*cond, data = stroop, whichRandom = "ID", ID = "ID", whichConstraint = c(cond = "2 > 1"), rscaleEffects = c("ID" = 1, "cond" = 1/6, "ID:cond" = 1/10), iterationsPosterior = 100, burnin = 1)
+#' resStroop <- constraintBF(rtS ~ ID*cond,
+#'                           data = stroop,
+#'                           whichRandom = "ID",
+#'                           ID = "ID",
+#'                           whichConstraint = c(cond = "2 > 1"),
+#'                           rscaleEffects = c("ID" = 1, "cond" = 1/6, "ID:cond" = 1/10))
 #'
 #' calculateDifferences(resStroop, effect = "estimate")
 #' calculateDifferences(resStroop, effect = "observed")
@@ -94,8 +104,8 @@ calculateDifferences <- function(x, effect = c("estimate", "observed")) {
   colnames(Y) <- x@constraints@constraints[["constraintElement"]]
   Y <- dplyr::as_tibble(Y) %>%
     tibble::add_column(individual = x@designIndeces[["IDLevels"]], effect = effect) %>%
-    tidyr::pivot_longer(cols = 1:last_col(2), names_to = "differences", values_to = "estimate") %>%
-    dplyr::arrange(differences, individual)
+    tidyr::pivot_longer(cols = 1:tidyselect::last_col(2), names_to = "differences", values_to = "estimate") %>%
+    dplyr::arrange(.data$differences, .data$individual)
 
   return(Y)
 }

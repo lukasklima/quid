@@ -7,7 +7,7 @@
 calculateDifferences(x, effect = c("estimate", "observed"))
 }
 \arguments{
-\item{x}{an object of class \code{\link{BFBayesFactorConstraint}}.}
+\item{x}{an object of class \code{\link{BFBayesFactorConstraint-class}}.}
 
 \item{effect}{the effect differences to be calculated. \code{effect = "estimate"}
 computes the effect differences from the model estimates;
@@ -26,7 +26,12 @@ Calculates the differences between the conditions specified in the constraints
 \dontrun{
 data(stroop)
 
-resStroop <- constraintBF(rtS ~ ID*cond, data = stroop, whichRandom = "ID", ID = "ID", whichConstraint = c(cond = "2 > 1"), rscaleEffects = c("ID" = 1, "cond" = 1/6, "ID:cond" = 1/10), iterationsPosterior = 100, burnin = 1)
+resStroop <- constraintBF(rtS ~ ID*cond,
+                          data = stroop,
+                          whichRandom = "ID",
+                          ID = "ID",
+                          whichConstraint = c(cond = "2 > 1"),
+                          rscaleEffects = c("ID" = 1, "cond" = 1/6, "ID:cond" = 1/10))
 
 calculateDifferences(resStroop, effect = "estimate")
 calculateDifferences(resStroop, effect = "observed")

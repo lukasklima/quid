@@ -4,12 +4,12 @@ BFConstraint <- function(priorProbability,
                          bayesFactor,
                          constraints,
                          cleanConstraints) {
-  new("BFConstraint",
-      priorProbability = priorProbability,
-      posteriorProbability = posteriorProbability,
-      bayesFactor = bayesFactor,
-      constraints = constraints,
-      cleanConstraints = cleanConstraints
+  methods::new("BFConstraint",
+               priorProbability = priorProbability,
+               posteriorProbability = posteriorProbability,
+               bayesFactor = bayesFactor,
+               constraints = constraints,
+               cleanConstraints = cleanConstraints
   )
 }
 
@@ -22,19 +22,20 @@ BFBayesFactorConstraint <- function(generalTestObj,
                                     mcmcFull,
                                     designIndeces,
                                     observedEffects) {
-  new("BFBayesFactorConstraint",
-      generalTestObj = generalTestObj,
-      constraints = constraints,
-      individualEffects = individualEffects,
-      posteriorMean = posteriorMean,
-      posteriorSD = posteriorSD,
-      totalThetas = totalThetas,
-      mcmcFull = mcmcFull,
-      designIndeces = designIndeces,
-      observedEffects = observedEffects
+  methods::new("BFBayesFactorConstraint",
+               generalTestObj = generalTestObj,
+               constraints = constraints,
+               individualEffects = individualEffects,
+               posteriorMean = posteriorMean,
+               posteriorSD = posteriorSD,
+               totalThetas = totalThetas,
+               mcmcFull = mcmcFull,
+               designIndeces = designIndeces,
+               observedEffects = observedEffects
   )
 }
 
+#' @importFrom methods show slot
 setMethod("show", "BFBayesFactorConstraint", function(object) {
   cat("\n")
   cat("Constraints analysis\n--------------\n")

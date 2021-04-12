@@ -45,11 +45,14 @@
 #' @param ... further arguments to be passed to
 #'   \code{\link[BayesFactor]{generalTestBF}}.
 #'
-#' @return An object of class \code{\link{BFBayesFactorConstraint}}.
+#' @return An object of class \code{\link{BFBayesFactorConstraint-class}}.
 #'
 #' @references Rouder, J. N., Morey, R. D., Speckman, P. L., Province, J. M., (2012)
 ##'   Default Bayes Factors for ANOVA Designs. Journal of Mathematical
 ##'   Psychology.  56.  p. 356-374.
+#'
+#' @importFrom stats as.formula rcauchy rnorm sd terms
+#' @importFrom rlang .data
 #'
 #' @export
 #'
@@ -62,7 +65,7 @@
 #'                           whichRandom = "ID",
 #'                           ID = "ID",
 #'                           whichConstraint = c(cond = "2 > 1"),
-#'                           rscaleEffects = c("ID" = 1, "cond" = 1/6, "ID:cond" = 1/10)
+#'                           rscaleEffects = c("ID" = 1, "cond" = 1/6, "ID:cond" = 1/10))
 #' }
 #'
 constraintBF <- function(formula, data, whichRandom, ID,

@@ -7,7 +7,7 @@
 plotEffects(x, .raw = FALSE)
 }
 \arguments{
-\item{x}{an object of class \code{\link{BFBayesFactorConstraint}}.}
+\item{x}{an object of class \code{\link{BFBayesFactorConstraint-class}}.}
 
 \item{.raw}{if \code{FALSE}, outputs the plot. If \code{TRUE} returns the
 \code{data.frame} that is used for making the plot.}
@@ -20,7 +20,12 @@ Plots observed vs estimated individual effects for each level of the effect
 \dontrun{
 data(stroop)
 
-resStroop <- constraintBF(rtS ~ ID*cond, data = stroop, whichRandom = "ID", ID = "ID", whichConstraint = c(cond = "2 > 1"), rscaleEffects = c("ID" = 1, "cond" = 1/6, "ID:cond" = 1/10), iterationsPosterior = 100, burnin = 1)
+resStroop <- constraintBF(rtS ~ ID*cond,
+                          data = stroop,
+                          whichRandom = "ID",
+                          ID = "ID",
+                          whichConstraint = c(cond = "2 > 1"),
+                          rscaleEffects = c("ID" = 1, "cond" = 1/6, "ID:cond" = 1/10))
 
 plotEffects(resStroop)
 }
