@@ -75,6 +75,7 @@ constraintBF <- function(formula, data, whichRandom, ID,
 
   # Assertions
   data <- forceDataFrame(data)
+  data <- checkUsedLevels(formula = formula, data = data)
   ellipsis::check_dots_used()
   checkFormulaData(formula = formula, data = data)
   checkID(ID = ID, data = data)

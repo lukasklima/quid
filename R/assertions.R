@@ -67,3 +67,22 @@ checkIterations <- function(iterationsPosterior = iterationsPosterior, burnin = 
          "\n \u2716 'burnin' is ", burnin, call. = FALSE)
   }
 }
+
+checkUsedLevels <- function(formula, data) {
+  tt <- terms(formula)
+  variables <- rownames(attr(tt, "factors"))
+  idx <- colnames(data) %in% variables
+  x <- data[idx]
+  ix <- vapply(x, is.factor, NA)
+  x <- x[ix]
+
+  unusedLevels <- vapply(x, function(f) nlevels(f) != nlevels(droplevels(f)), NA)
+
+  if(any(unusedLevels)) {
+    data <- droplevels(data)
+    warning("Dropped unused factor level(s) in variables: \n\n",
+            paste0("\u2716 ", names(unusedLevels[which(unusedLevels)]), "\n"),
+            call. = FALSE)
+  }
+  return(data)
+}
