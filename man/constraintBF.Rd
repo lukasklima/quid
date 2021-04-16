@@ -60,7 +60,7 @@ certain effects hold for all subjects. The backend is provided by the
 \code{\link[BayesFactor]{BayesFactor-package}}. The input formula is the
 full model to be tested. It usually contains an interaction term between
 the subject ID and the effect for which constraints are tested (e.g.
-\code{ID:condition}. The ID variable is to be specified in \code{ID} and is
+\code{ID:condition}). The ID variable is to be specified in \code{ID} and is
 usually a random factor to be specified in \code{whichRandom}.
 
 Order constraints on effects should be specified in \code{whichConstraint},
