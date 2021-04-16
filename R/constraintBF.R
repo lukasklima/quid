@@ -74,6 +74,7 @@ constraintBF <- function(formula, data, whichRandom, ID,
                         burnin = 1000, ...) {
 
   # Assertions
+  data <- forceDataFrame(data)
   ellipsis::check_dots_used()
   checkFormulaData(formula = formula, data = data)
   checkID(ID = ID, data = data)
