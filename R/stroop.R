@@ -2,6 +2,13 @@
 #'
 #' The dataset from on Von Bastian et al. (2015) on the Stroop task.
 #'
+#' In a Stroop task, average response times are compared across conditions.
+#' Participants get exposed to word stimuli and are instructed to indicate the
+#' font colour of the word. The word itself is also a colour word and is either
+#' \strong{congruent} with the font colour or \strong{incongruent}. For example, the stimulus word
+#' “red” in blue font would constitute the incongruent condition, whereas the
+#' word “red” in red font would constitute the congruent condition.
+#'
 #' @format A \code{data.frame} of 11245 rows and 7 columns
 #' \describe{
 #'   \item{ID}{Factor giving the participant ID: 1-121}
