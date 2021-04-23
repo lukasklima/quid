@@ -48,7 +48,7 @@ plotEffects <- function(x, .raw = FALSE) {
     ggplot2::geom_point(ggplot2::aes(colour = .data$estimate > 0), show.legend = FALSE) +
     ggplot2::facet_grid(.data$differences ~ .data$effect) +
     ggplot2::geom_hline(yintercept = 0, colour = "grey70") +
-    ggplot2::scale_colour_manual(values = c("#FC4E07", "#00AFBB")) +
+    ggplot2::scale_colour_manual(values = c("FALSE" = "#FC4E07", "TRUE" = "#00AFBB")) +
     ggplot2::scale_x_continuous(name = "Individual", breaks = c(min(Y$ordering), max(Y$ordering))) +
     ggplot2::ylab("Effect") +
     ggplot2::theme_light() +
