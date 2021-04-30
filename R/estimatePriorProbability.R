@@ -51,6 +51,8 @@ estimatePriorProbability <- function(iTheta = iTheta,
 }
 
 # BayesFactor:::fixedFromRandomProjection
+#' @importFrom Matrix Matrix
+#'
 fixedFromRandomProjection <- function (nlevRandom, sparse = FALSE) {
   centering = diag(nlevRandom) - (1/nlevRandom)
   S = as.vector((eigen(centering)$vectors)[, 1:(nlevRandom - 1)])
