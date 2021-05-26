@@ -32,4 +32,7 @@ Imports:
     tidyselect,
     Matrix
 Suggests: 
+    rmarkdown,
+    knitr,
     testthat
+VignetteBuilder: knitr

@@ -1,0 +1,248 @@
+---
+title: "Main Manual"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Main Manual}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width=7,
+  fig.height=5,
+  fig.align="center",
+  eval=TRUE,
+  message=FALSE, 
+  warning=FALSE
+)
+```
+
+<!-- badges: start -->
+[![Travis build status](https://travis-ci.com/lukasklima/quid.svg?branch=master)](https://travis-ci.com/lukasklima/quid)
+<!-- badges: end -->
+
+### Introduction {#intro}
+This is an R-package to assess **qu**alitative **i**ndividual **d**ifferences using Bayesian model comparison and estimation. The `quid` package is intended as an extension to the [`BayesFactor` package`](https://CRAN.R-project.org/package=BayesFactor) ([Morey et al., 2018](#Morey2018)). It allows for the testing of theoretical order constraints in repeated measures designs. In other words, it offers a method for testing the direction of individual effects. Typical questions that can be answered with this package are of the sort: "Does everyone show an effect in the same direction?" and "are there qualitative individual differences?".
+
+This is the main manual and thus quite comprehensive. For a quick reference on how to use the package see the quick start vignette. The theoretical framework of Bayes factors is extensive, and as such this manual will only touch on the [theoretical basis](#theory). For those who seek more detailed information, specific references will be linked to throughout this manual and a complete list of [references](#references) is given at the end.
+
+This manual will first give a motivation for this package and introduce the [theoretical and statistical framework](#theory). Then, we show how this package implements the presented framework and we apply it to a specific example. 
+
+### What this Package Does
+Theory often implies certain individual order constraints, such as "everyone has a positive effect". Repeated measures provide information that allow for estimating individual true effects. Commonly however, investigation focuses on comparing mean differences, which cannot answer whether everyone has the same effect. [Haaf and Rouder (2017)](#HaafRouder2017) developed a method using Bayesian mixed models to compare the evidence that the data provide for different sets of constraints (i.e. hypotheses). This allows for testing theoretical implications for a collection of individual effects. This package is the implementation of this method.
+
+### Loading the Package {#loading}
+At this point the `quid` package can only be installed from github. For this you need to install the `devtools` package and then run the `install_github` function. You can include the argument `build_vignettes = TRUE` to also install this manual. This might take slightly longer to install. Lastly, you have to load the package via `library`:
+
+```{r loading, message=FALSE, eval=FALSE}
+devtools::install_github("lukasklima/quid", build_vignettes = TRUE)
+```
+
+```{r}
+library(quid)
+```
+
+
+### Overview of Functions {#functions}
+
+| Function              | Description                                                       |
+|:----------------------|:------------------------------------------------------------------|
+|`constraintBF`         | Main function to calculate Bayes factors for constraints          |
+|`calculateDifferences` | Calculate differences between conditions specified in constraints |
+|`plotEffects`          | Plot a BFBayesFactorConstraint object                             |
+
+### Motivation for this Package
+Experimental designs allow for a deep insight into the underlying mechanisms that produce the phenomena under investigation. This is especially the case in within-subject designs as each subject serves as its own control. In such designs, every participant performs several trials in each condition. For instance, in a Stroop task ([Stroop, 1935](#stroop)), average response times are compared across conditions. Participants get exposed to word stimuli and are instructed to indicate the font colour of the word. The word itself is also a colour word and is either *congruent* with the font colour or *incongruent*. For example, the stimulus word "red" in blue font would constitute the incongruent condition, whereas the word "red" in red font would constitute the congruent condition. The common approach of analysing such repeated measures data, is to compare group averages across conditions. For the Stroop effect, response times are usually faster in the congruent condition. 
+
+Individual effects occur, as the name implies, on the individual level. Comparing group averages, however, does not allow for making inferences about individual effects. They can actually be misleading. For instance, consider the Stroop effect for which theory suggests that there is a positive effect when comparing the congruent versus the incongruent condition. A researcher collects repeated measures to test this theoretical implication. Imagine we knew the true effect sizes for each participant and that there are *qualitative* differences in effects. That is, half of the participants have true positive effects and the other half have true negative effects. In this scenario, comparing group averages across conditions would show that there is no difference in response times across conditions. Yet, this conclusion would actually be false for each participant in the study. There are in fact qualitative individual differences that cannot be detected by using the common approach.
+
+[Haaf and Rouder (2017)](#HaafRouder2017) developed a methodology that extends the range of inferences that can be drawn from repeated measures.  More specifically, it enables the detection of qualitative individual differences. As the authors put it, it lets us answer the question: "Does everyone?" ([Haaf, Klaassen, & Rouder, 2019](#HaafKlaassen2019); [Haaf & Rouder, 2017](#HaafRouder2017); [Rouder & Haaf, 2020](#RouderHaaf2020)). As such, the framework allows for answering questions about the collection of individuals rather than their aggregate. This is done by testing order constraints in Bayesian mixed models. For instance, a model without order constraints allows individual effects to vary quantitatively and qualitatively, that is they can be positive and negative (or null). When we want to test whether everyone has a positive Stroop effect, we have to formulate a model with order constraints which limits individual variation to be only quantitative. Here, individual effects can show variation but are limited to be only positive. In this simple scenario, we can then compare how well the unconstrained model explains the data compared to the constrained model. If the unconstrained model performs better, it is an indication that there are qualitative differences.
+
+This allows researchers to scrutinize the effect under investigation. Usually, as in the case of the Stroop effect, theory prescribes directional hypotheses which can be translated into order constraints. The testing of order constraints for the aggregate is not a problem whatsoever with common methods, for instance, through the use of one-sided tests. Yet, this does not allow for inferences about the individual. A researcher should be able to investigate whether such order constraints hold for a collection of individual effects. Hereafter, we will outline the functioning of the method and its application to the Stroop inhibition task.
+
+### The Underlying Model {#theory}
+In order to answer whether everyone shows a Stroop effect we employ Bayesian mixed models with order and equality constraints on individuals. The following section describes the functioning of the model. The exact derivation of the model and its specifications are given in [Haaf and Rouder (2017)](#HaafRouder2017).
+
+The response variable is given by $Y_{ijk}$, where the subscript $i$ denotes the participant, with $i=1,\ldots,I$; the subscript $j$ denotes the condition with $j=1,2$; and the subscript $k$ denotes the number of the replicate of that participant in that condition with $k=1,\ldots,K_{ij}$. The response variable is described by a linear model:
+\begin{equation}
+Y_{ijk} \stackrel{iid}{\sim} \mbox{Normal}\left(\mu+\alpha_i+x_j\theta_i,\sigma^2\right).
+\end{equation}
+The first term $\mu+\alpha_i$ acts as the intercept and describes the mean response for the $i$th participant in the control condition. Here, $\mu$ is the grand mean of intercepts and $\alpha_i$ is the $i$th participant's deviation from it. The term $x_j$ specifies the condition. It can be understood as a dummy variable, where $x_j=0$ denotes the baseline (or control) condition and $x_j=1$ the experimental (or treatment) condition. Accordingly, $\theta_i$ gives the true effect of the experimental condition. Lastly, $\sigma^2$ stands for the variance of the responses. The parameter of interest are the true effects $\theta_i$, that are modelled as random effects:
+\begin{align}
+\theta_i \stackrel{iid}{\sim} \mbox{Normal}(\nu,\eta^2).
+\end{align}
+Here, $\nu$ is the population mean of true effects and $\eta^2$ gives the population variance of these effects. Of interest is the collection of true effects. The aim is to ascertain whether all individual effects adhere to certain order and/or equality constraints that are implicated by theory. Considering the Stroop example, for order constraints, previous research implicates that everyone shows a true positive effect for the incongruent (experimental) condition, meaning that people take longer for the incongruent than for the congruent condition. Equality constraints hold that everyone shows the same effect, i.e. there are neither qualitative nor quantitative individual differences. Although this is quite unlikely they are included and tested in order to determine if the data is conclusive enough to detect individual differences. This is for instance the case when individual differences are very small or when there are too few observations per participant. In order to test these theoretical implications, constraints have to be formulated and compared.
+
+#### Entering Constraints
+Constraints are placed on individual true effects, $\theta_i$. [Haaf and Rouder (2017)](#HaafRouder2017) formulate four models with the respective order and equality constraints. First, the *unconstrained* model allows for qualitative and quantitative differences and is given by:
+\[
+  \begin{array}{llr}
+\mathcal {M}_u: && \theta_i \stackrel{iid}{\sim} \mbox{Normal}(\nu,\eta^2),\\
+\end{array}
+\]
+Here, individual effects can vary freely and both positive and negative effects are possible. 
+
+Second, the *positive* model allows only for quantitative individual differences and is given by
+\[
+\mathcal {M}_+: \quad \theta_i \stackrel{iid}{\sim} \mbox{Normal}_+(\nu,\eta^2).
+\]
+Here, individual effects are free to vary but are restricted to positive values only. 
+
+Third, even more constrained, the *common-effect* model places equality constraints on individual effects and is given by
+\[
+\mathcal {M}_1: \quad \theta_i = \nu.
+\]
+This model holds that all individual effects are equal and that there are thus no individual differences. This model is included to check whether the data allows for the detection of individual differences.
+
+Lastly, the *null* model places the constraint that each individual effect is zero and is thus given by
+\[
+\mathcal {M}_0: \quad \theta_{i}=0.
+\]
+The null model will be the preferred model when no individual effect is convincingly different from zero. 
+
+#### Comparing Models
+As mentioned earlier, the aim is to evaluate and compare which of these models with their respective constraints predicted the data best. In a Bayesian framework, this is done using Bayes factors. The Bayes factor for *model 1* over *model 2* is the probability of the data given *model 1* divided by the probability of the data given *model 2*. Or in mathematical notation $BF_{12}=\frac{P(\bf Y \mid \mathcal {M}_1)}{P(\bf Y \mid \mathcal {M}_2)}$, where the subscript of $BF_{12}$ denotes which model is in the numerator and which model in the denominator. What remains is to calculate the Bayes factor for each of the models in order to ascertain for which model the evidence as provided by the data is strongest.
+
+### Analysis of the Stroop Effect with the quid Package
+We continue the Stroop example from above and show how to perform the analyis with the `quid` package. The `stroop` data set included in the package is from [Von Bastian et al. (2015)](#vonBastian2015), a classical Stroop interference task ([Stroop, 1935](#stroop)). See `?stroop` for details. The data set contains three columns of interest for our analysis: `rtS` the dependent variable, which is the response time in seconds; `ID` is the participant ID; and `cond`, a factor with two levels indicating the condition (1 = congruent, 2 = incongruent). This study is a repeated measures design, and all participants completed several trials in both conditions.
+
+The main function of the package is the `constraintBF` function. It lets you impute order constraints on individual effects and computes their Bayes factors. As described above, we use Bayesian mixed models and thus require an interaction term between fixed and random factors. Below is the function call and each function argument is further explained thereunder.
+
+```{r}
+data(stroop)
+
+resStroop <- constraintBF(formula = rtS ~ ID*cond,
+                          data = stroop,
+                          whichRandom = "ID",
+                          ID = "ID",
+                          whichConstraint = c("cond" = "2 > 1"),
+                          rscaleEffects = c("ID" = 1, "cond" = 1/6, "ID:cond" = 1/10))
+```
+
+We use a formula to express the model. The outcome variable `rtS` is modelled as a function of the main effect of `ID` (person variable), the main effect of `cond` (condition variable) and their interaction (`ID:cond`). In short, this can be expressed as `ID*cond`.
+
+#### Function Arguments
+The `whichRandom` argument specifies that `ID` is a random factor. The `ID` argument specifies that the participants' IDs are stored in the variable `"ID"`.
+
+You can impute constraints using the `whichConstraint` argument, which takes a named vector. Such an order constraint is of the form: "Condition A is bigger than condition B". The names are the names of the effect and the values are the constraints. We want to corroborate the findings in the literature that response times are *faster* (i.e. smaller) in the congruent condition, and that this holds for every individual.
+
+Lastly, the `rscaleEffects` is used to specify the prior scales of the effects. You need to specify priors for every effect in your constraints and for every effect in its interactions and for the interaction itself. In this example, we defined constraints for `cond` and we have an interaction between `ID` and `cond`. Thus, we have to specify priors for `ID`, `cond` and their interaction `ID:cond`. For more details about prior scales see [Haaf and Rouder (2017)](#HaafRouder2017) and [Rouder and Haaf (2020, starting at p. 15)](#RouderHaaf2020).
+
+#### Prior Settings
+For completeness, we include a small discussion of the prior choices in this example. One needs a small amount of domain knowledge to set these priors. However, we believe this is easily obtained by browsing the literature. The knowledge you need pertains to (1) how big you expect the mean effect to be and to (2) how much you expect individuals to vary around this mean ([Rouder & Haaf, 2020](#RouderHaaf2020)). The typical effect size in response time tasks between conditions is about 50 ms. In subsecond response time tasks, participants' within-condition standard deviation ranges from 150 ms to 300 ms ([Haaf & Rouder (2019)](#HaafRouder2019)). Thus, a reasonable effect scale ratio between mean effect size and trial noise would be 50ms/300ms or 1/6. We thus set the argument `"cond" = 1/6`. Next, we expect individual effects to vary around the mean effect by about 30 ms. Again, we express this as a ratio of the trial noise, 30ms/300ms or 1/10. We thus set the argument `"ID:cond" = 1/10`. Lastly, we expect that individual baselines also vary on the degree of around 300 ms, or 1 unit of trial noise. We thus set the argument `"ID" = 1` ([Haaf & Rouder (2019), p. 783](#HaafRouder2019)). It has to be noted that for the Stroop example the conclusions drawn from Bayes factor analysis are quite robust for various prior settings (see [Rouder & Haaf, 2019, p. 464](#RouderHaaf2019)).
+
+#### Interpretation
+Let us recap what we have done so far. We have a data set with within-subjects repeated measures in two conditions: *congruent* and *incrongruent*. Theory stipulates that response times are faster in the congruent condition vs. the incongruent condition. Thus the difference between the two conditions is *positive*. Our aim was to test whether this is true for every participant, or in other words, whether there are *quantitative* **and** *qualitative* individual differences. We thus formulated four models. The *unconstrained* model allows for *quantitative* **and** *qualitative* differences. The *constrained* or *positive* model allows only for quantitative differences, that is, all individual effects are positive. The *common-effect* model holds that there are no individual differences whatsoever. The *null* model expects all individual effects to be zero. With that in mind, let us have a look at the output that we get when printing the object.
+
+```{r}
+resStroop
+```
+
+First, the constraints analysis output. The Bayes factor is the Bayes factor of the *constrained* model (i.e. positive model) vs. the *unconstrained* model. Furthermore, you can see the posterior and prior probabilities of the constraints given the unconstrained model. You can think of the prior probability as the probability of the constraints holding *before* seeing the data, and the posterior probability as the probability of the constraints holding *after* seeing the data. We see that the constrained model is the preferred model. At the bottom you can see your imputed constraints.
+
+Second, under "Bayes factor analysis" you can see the output from the `generalTestBF` function from the [`BayesFactor` package](https://CRAN.R-project.org/package=BayesFactor). See the BayesFactor vignettes for details on how to manipulate Bayes factor objects. Here you see the Bayes factors of the individual models vs. the model in the denominator, the intercept only model. Model number three `[3]` with only main effects is the *common effect* model. Model number four `[4]` with the interaction term `ID:cond` that allows for random slopes is the *unconstrained* model. The unconstrained model is the preferred model which suggests that the equality constraint does not hold. You can get a direct comparison between the two by manipulating the `generalTestObj` slot of the `resStroop` object:
+
+```{r}
+bfs <- resStroop@generalTestObj
+bfs[4] / bfs[3]
+```
+
+You can also get a comparison between the preferred model and all other models:
+
+```{r}
+bfs / max(bfs)
+```
+
+#### Estimated True vs. Observed Effects
+With the `plotEffects` function, you can plot the individual observed vs. the estimated true effects:
+
+```{r}
+plotEffects(resStroop)
+```
+
+The individual effects in the plot are taken from your defined constraints. You can see the constraints on the right side of the plot. Here they are the difference between `cond = 2` and `cond = 1`. 
+
+On the left, you see the *observed* effects, which are a function of true effects and sample noise. On the right, you see the *model-based* estimates, given the unconstrained model. Model-based estimates account for trial noise and represent only true effects ([Rouder & Haaf, 2020](#RouderHaaf2020)). In the plot you can see that some individuals show an observed negative effect. However, the model-based estimates are far more moderate and have shrunk individual effects towards the grand mean.
+
+#### Plot Options
+If you want to manipulate the plot, you can do so by adding `ggplot2` layers to it, or start from scratch by setting the `.raw` argument to `TRUE` to get the `data.frame` used to produce the plot.
+
+```{r eval=FALSE}
+plotEffects(resStroop, .raw = TRUE)
+```
+
+Furthermore, you can get the individual differences between the conditions defined in your constraints with the `calculateDifferences` function. The function takes two arguments: an object of class `BFBayesFactorConstraint` and `effect`, a named vector of length one, specifying whether you want the model estimates (`"estimate"`) or the observed effects (`"observed"`).
+
+### More Complex Models
+We conclude this manual by showing how you can use it to analyse more complex data sets. In this example, we add another level to the constraints and add another covariate to the model. 
+
+The data set `ld5` is included in the package. It is from [Rouder et al. (2005)](#Rouder2005) on the lexical task ([Moyer & Landauer, 1967](#Moyer1967)). See `?ld5` for details. Here, we attempt to replicate the results from [Haaf et al., 2019](#HaafKlaassen2019). In a lexical task, participants are required to indicate whether a number is bigger or smaller than five. The different number stimuli comprise the different conditions. They are one of the numbers 2, 3, 4, 6, 7 and 8. Participants are thus subjected to six different conditions, one for each number stimuli. 
+
+The phenomenon we want to explain is the difference in reaction time across conditions. Participants' reaction time varies as a function of the stimulus number. For instance, it may be that participants identify numbers further from five more quickly than numbers closer to five. Three different theories attempt to explain different kinds of structures in the data. *Analog-Representation Theory* holds that responses are quicker for numbers further from five. *Propositional Representation Theory* holds that response times do not vary across stimuli. *Priming + Spreading Activation Theory* postulates that responses are quicker for numbers closer to five. More detailed explanations of the theories are given in [Haaf et al. (2019)](#HaafKlaassen2019) and [Moyer and Landauer (1967)](#Moyer1967)). We want to investigate which theory is able to explain the data best, and if one theory is sufficient. If there are qualitative differences, we would need more than one theory to explain the data. 
+
+#### Analysis
+[Haaf et al. (2019)](#HaafKlaassen2019) use a different parameterization than we use here. [Haaf et al. (2019)](#HaafKlaassen2019) modelled the contrasts between the different conditions and included a dummy variable to indicate whether the stimulus number is above or below five. The `quid` package uses a linear model, and as such you can include any covariates you like. Because of this we get model estimates for each stimulus condition and not only their contrasts. The variables of interest here are: `rt` the dependent variable, which is the response time in seconds; `sub` is the participant ID; `distance`, a factor with 3 levels indicating how far the stimulus number is away from 5 (with 1 being the smallest and 3 the highest); and `side`, a factor with 2 levels indicating whether the stimulus number is below (1) or above (2) five. 
+
+In actuality, we can capture the same variation as [Haaf et al. (2019)](#HaafKlaassen2019) by including a three-term interaction between `sub`, `distance` and `side`. Currently however, three-plus-term interactions are not supported by the package, but will be added in the near future. Hence, we include `side` as a main effect, and have to note that the results are not remarkably different from the ones obtained by [Haaf et al. (2019)](#HaafKlaassen2019).
+
+Let us test the *Analog-Representation Theory*. Have a look at the code block below. All function arguments were discussed above in the Stroop example. The only thing different here is the input to `whichConstraint`. The *Analog-Representation Theory* holds that response times for numbers further away from five are *faster* (i.e. smaller). We thus impute each comparison separately. For the prior settings in `rscaleEffects`, we again have to specify a prior scale for each effect in your constraints and for every effect in its interactions and for the interaction itself. Since we have domain knowledge, we also include a prior specification for `side`.
+
+```{r}
+data(ld5)
+
+resLD5 <- constraintBF(formula = rt ~ sub * distance + side,
+                       data = ld5,
+                       whichRandom = c("sub"),
+                       ID = "sub",
+                       whichConstraint = c("distance" = "1 > 2", "distance" = "2 > 3"),
+                       rscaleEffects = c("sub" = 1,
+                                         "side" = 1/6,
+                                         "distance" = 1/6,
+                                         "sub:distance" = 1/10))
+
+resLD5
+```
+
+We can see that the constrained model is the preferred model. At the bottom you can see that the defined constraints now have two levels. Furthermore, from "Bayes factor analysis" we can see that the preferred model is not that clear-cut. The model with only the main effects `sub`, `distance` and the interaction `sub:distance` performs pretty well. Which model is the preferred model in such a case will also depend on the specific iteration of posterior sampling. You can get more stable estimates by increasing the posterior sampling iterations by use of the `iterationsPosterior` argument, and by increasing the prior sampling iterations by use of the `iterationsPrior` argument. Note that big values will increase the computation time quite significantly.
+
+Again we can plot the observed effects versus the estimated true effects given the unconstrained model. The plotting function produces a comparison for each difference defined in your constraints. On the right side of the plot you see the labels of the differences. We can again observe that the model estimates are shrunk.
+
+```{r}
+plotEffects(resLD5)
+```
+
+
+### References {#references}
+
+<a id="HaafKlaassen2019"></a>
+Haaf, J. M., Klaassen, F., & Rouder, J. (2019). Capturing Ordinal Theoretical Constraint in Psychological Science.
+
+<a id="HaafRouder2017"></a>
+Haaf, J. M., & Rouder, J. N. (2017). Developing constraint in Bayesian mixed models. Psychological Methods, 22(4), 779.
+
+<a id="HaafRouder2019"></a>
+Haaf, J. M., & Rouder, J. N. (2019). Some do and some don’t? Accounting for variability of individual difference structures. Psychonomic bulletin & review, 26(3), 772-789.
+
+<a id="Morey2018"></a>
+Morey, R. D., Rouder, J. N., & Jamil, T. (2018). BayesFactor: Computation of Bayes Factors for common designs. R package version 0.9.12-4.2. URL (cited on June 30, 2018): https://CRAN.R-project.org/package=BayesFactor.
+
+<a id="Moyer1967"></a>
+Moyer, R. S., & Landauer, T. K. (1967). Time required for judgements of numerical inequality. Nature, 215(5109), 1519–1520.
+
+<a id="RouderHaaf2019"></a>
+Rouder, J. N., & Haaf, J. M. (2019). A psychometrics of individual differences in experimental tasks. Psychonomic bulletin & review, 26(2), 452-467.
+
+<a id="RouderHaaf2020"></a>
+Rouder, J. N., & Haaf, J. M. (2020). Are There Reliable Qualitative Individual Difference in Cognition?.
+
+<a id="Rouder2005"></a>
+Rouder, J. N., Lu, J., Speckman, P., Sun, D., & Jiang, Y. (2005). A hierarchical model for estimating response time distributions. Psychonomic Bulletin & Review, 12(2), 195-223., retrieved from https://raw.githubusercontent.com/PerceptionCognitionLab/data0/master/lexDec-dist5/ld5.all
+
+<a id="stroop"></a>
+Stroop, J. R. (1935). Studies of interference in serial verbal reactions. Journal of Experimental Psychology, 18(6), 643.
+
+<a id="vonBastian2015"></a>
+Von Bastian, C. C., Souza, A. S., & Gade, M. (2016). No evidence for bilingual cognitive advantages: A test of four hypotheses. Journal of Experimental Psychology: General, 145(2), 246., retrieved from \url{https://raw.githubusercontent.com/PerceptionCognitionLab/data0/master/contexteffects/FlankerStroopSimon/LEF_stroop.csv}
