@@ -37,7 +37,7 @@ plotEffects <- function(x, .raw = FALSE) {
     dplyr::inner_join(estimates, by = c("individual", "differences"))
 
   Y <- dplyr::bind_rows(observed, estimates) %>%
-    dplyr::mutate(effect = factor(.data$effect, levels = c("observed", "estimate"), labels = c("Observed effect", "Effect parameter"))) %>%
+    dplyr::mutate(effect = factor(.data$effect, levels = c("observed", "estimate"), labels = c("Observed effect", "Model estimates"))) %>%
     dplyr::mutate(differences = factor(.data$differences))
 
   if(.raw) {
