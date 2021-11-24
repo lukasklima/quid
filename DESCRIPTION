@@ -1,7 +1,7 @@
 Package: quid
 Type: Package
 Title: Bayesian Mixed Models for Qualitative Individual Differences
-Version: 0.0.0.9000
+Version: 0.0.1
 Authors@R: c(
     person("Lukas", "Klima", email = "lukas.klima@student.uva.nl", role = c("aut", "cre")),
     person("Julia", "Haaf", email = "j.m.haaf@uva.nl", role = c("aut", "dgs", "ths")))
