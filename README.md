@@ -1,9 +1,7 @@
 
 <!-- badges: start -->
 
-[![Travis build
-status](https://travis-ci.com/lukasklima/quid.svg?branch=master)](https://travis-ci.com/lukasklima/quid)
-
+[![R-CMD-check](https://github.com/lukasklima/quid/workflows/R-CMD-check/badge.svg)](https://github.com/lukasklima/quid/actions)
 <!-- badges: end -->
 
 ### Introduction
