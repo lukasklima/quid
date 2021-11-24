@@ -3,10 +3,10 @@ Type: Package
 Title: Bayesian Mixed Models for Qualitative Individual Differences
 Version: 0.0.1
 Authors@R: c(
-    person("Lukas", "Klima", email = "lukas.klima@student.uva.nl", role = c("aut", "cre")),
+    person("Lukas", "Klima", email = "lukas.klima@live.at", role = c("aut", "cre")),
     person("Julia", "Haaf", email = "j.m.haaf@uva.nl", role = c("aut", "dgs", "ths")))
 Depends: R (>= 3.2.0)
-Maintainer: The package maintainer <yourself@somewhere.net>
+Maintainer: Lukas Klima <lukas.klima@live.at>
 Description: Test whether equality and order constraints hold for all 
     individuals simultaneously by comparing Bayesian mixed models through Bayes 
     factors.
