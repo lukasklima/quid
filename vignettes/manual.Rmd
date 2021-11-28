@@ -93,7 +93,7 @@ With that in mind, we now show how you can perform Bayes factor model comparison
 
 ### Methods of Package Development
 
-When developing this package I relied heavily on previous work, theory and guidelines. This pertains to programming and development as well as Bayesian statistics. Hadley Wickhams "Developing R-Packages" ([Wickham, 2015](#rpackages)) provided the main framework for package development. For this, I used the `devtools` framework ([Wickham et al., 2020](#devtools)). Throughout the development cycle, I used version control through Git and GitHub ([Chacon & Straub, 2014](#git)). Furthermore, I wrote unit tests and used continuous integration through [Travis-CI](https://travis-ci.com/). Unit tests provide an automated way to check whether functions still produce the expected output after the code has been changed. Continuous integration automatically runs all these tests plus all the CRAN checks when pushing to GitHub. This setup facilitated an automated and efficient development cycle.
+When developing this package I relied heavily on previous work, theory and guidelines. This pertains to programming and development as well as Bayesian statistics. Hadley Wickhams "Developing R-Packages" ([Wickham, 2015](#rpackages)) provided the main framework for package development. For this, I used the `devtools` framework ([Wickham et al., 2020](#devtools)). Throughout the development cycle, I used version control through Git and GitHub ([Chacon & Straub, 2014](#git)). Furthermore, I wrote unit tests and used continuous integration through Travis-CI. Unit tests provide an automated way to check whether functions still produce the expected output after the code has been changed. Continuous integration automatically runs all these tests plus all the CRAN checks when pushing to GitHub. This setup facilitated an automated and efficient development cycle.
 
 Furthermore, I researched upon Bayes factors and the Zellner g-prior setup ([Liang et al., 2008](#Liang2008); [Rouder et al., 2012](#Rouder2012)). This was necessary in order to understand the parametrisation and implementation of the `BayesFactor` package ([Morey et al., 2018](#Morey2018)). Throughout the development, the source code of the `BayesFactor` package provided me with guidance and was a great resource for ideas.
 
@@ -343,7 +343,7 @@ As this is the first version of the package, we have to address its current limi
 
 <a id="git"></a> Chacon, S., & Straub, B. (2014). Pro git (p. 456). Springer Nature.
 
-<a id="stringi"></a> Gagolewski, M. (2021). *stringi: Fast and portable character string processing in R*. R package version 1.6.2, \<URL: <https://stringi.gagolewski.com/>\>.
+<a id="stringi"></a> Gagolewski, M. (2021). *stringi: Fast and portable character string processing in R*. R package version 1.6.2.
 
 <a id="HaafKlaassen2019"></a> Haaf, J. M., Klaassen, F., & Rouder, J. (2019). Capturing Ordinal Theoretical Constraint in Psychological Science.
 
