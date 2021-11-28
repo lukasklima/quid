@@ -10,7 +10,7 @@ Test whether equality and order constraints hold for all individuals
 simultaneously by comparing Bayesian mixed models through Bayes factors.
 }
 \author{
-\strong{Maintainer}: Lukas Klima \email{lukas.klima@student.uva.nl}
+\strong{Maintainer}: Lukas Klima \email{lukas.klima@live.at}
 
 Authors:
 \itemize{
