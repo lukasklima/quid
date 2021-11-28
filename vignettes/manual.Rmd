@@ -20,12 +20,6 @@ knitr::opts_chunk$set(
 )
 ```
 
-<!-- badges: start -->
-
-[![Travis build status](https://travis-ci.com/lukasklima/quid.svg?branch=master)](https://travis-ci.com/lukasklima/quid)
-
-<!-- badges: end -->
-
 ### Introduction {#intro}
 
 This is an R-package to assess **qu**alitative **i**ndividual **d**ifferences using Bayesian model comparison and estimation. The `quid` package is intended as an extension to the [`BayesFactor` package\`](https://CRAN.R-project.org/package=BayesFactor) ([Morey et al., 2018](#Morey2018)). It allows for the testing of theoretical order constraints in repeated measures designs. In other words, it offers a method for testing the direction of individual effects. Typical questions that can be answered with this package are of the sort: "Does everyone show an effect in the same direction?" and "are there qualitative individual differences?".

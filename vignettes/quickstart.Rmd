@@ -17,12 +17,6 @@ knitr::opts_chunk$set(
 )
 ```
 
-<!-- badges: start -->
-
-[![Travis build status](https://travis-ci.com/lukasklima/quid.svg?branch=master)](https://travis-ci.com/lukasklima/quid)
-
-<!-- badges: end -->
-
 ### Introduction
 
 This is an R-package to assess **qu**alitative **i**ndividual **d**ifferences using Bayesian model comparison and estimation.
