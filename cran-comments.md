@@ -1,7 +1,7 @@
 ## Resubmission
-This is a the second resubmission. In this version I have:
+This is the third resubmission. In this version I have:
 
-* Removed (possibly) invalid URLs from the vignettes.
+* Reduced vignette build time by using precomputed results.
 
 ## R CMD check results
 There were no ERRORs, WARNINGs or NOTEs.

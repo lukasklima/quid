@@ -7,7 +7,15 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width=7,
+  fig.height=5,
+  fig.align="center"
+)
+```
 
 ### Introduction
 
@@ -21,13 +29,11 @@ This is a quick start guide. For an extensive description of the package and the
 
 At this point the `quid` package can only be installed from github. For this you need to install the `devtools` package and then run the `install_github` function. You can include the argument `build_vignettes = TRUE` to also install this manual. This might take slightly longer to install. Lastly, you have to load the package via `library`:
 
-
-```r
+```{r loading, eval=FALSE, message=FALSE}
 devtools::install_github("lukasklima/quid", build_vignettes = TRUE)
 ```
 
-
-```r
+```{r}
 library(quid)
 ```
 
@@ -47,15 +53,13 @@ library(quid)
 
 To impute constraints, use the `whichConstraint` argument of the `constraintBF` function. `whichConstraint` takes a named vector, where the names are the name of the effect factor and the values are the constraints on effect levels. For instance, say you have a column that holds the condition (`condition`) with levels `treatment` and `control`. You want to check if the outcome variable (`outcome`) is bigger in the treatment condition, so your input should look like this:
 
-
-```r
+```{r}
 whichConstraint = c("condition" = "treatment > control")
 ```
 
 If you have a third (or more) level(s), say a low dose treatment (`low_dose`) and you want to test whether the effect in the treatment condition is bigger than in the low dose condition and the effect in the low dose condition is bigger than in the control condition your input should look like this:
 
-
-```r
+```{r}
 whichConstraint = c("condition" = "treatment > low_dose", "condition" = "low_dose > control")
 ```
 
@@ -69,10 +73,11 @@ We use a formula to express the model. The outcome variable `rtS` is modelled as
 
 The `whichRandom` argument specifies that `ID` is a random factor. The `ID` argument specifies that the participants' IDs are stored in the variable `"ID"`. The `rscaleEffects` argument is used to specify priors for the fixed, random and interaction effect.
 
+```{r include=FALSE}
+set.seed(122)
+```
 
-
-
-```r
+```{r message=FALSE, warning=FALSE}
 data(stroop)
 
 resStroop <- constraintBF(formula = rtS ~ ID*cond,
@@ -87,87 +92,38 @@ resStroop <- constraintBF(formula = rtS ~ ID*cond,
 
 Printing the `resStroop` object produces the following output:
 
-
-```r
+```{r}
 resStroop
-#> 
-#> Constraints analysis
-#> --------------
-#> Bayes factor          : 12.46582
-#> Posterior probability : 0.6584444
-#> Prior probability     : 0.05282
-#> 
-#> Constraints defined: 
-#>  cond : 1 < 2
-#> 
-#> =========================
-#> 
-#> Bayes factor analysis
-#> --------------
-#> [1] ID                  : 3.945904e+428 ±0%
-#> [2] cond                : 9.175351e+50  ±0%
-#> [3] ID + cond           : 4.491989e+490 ±0.89%
-#> [4] ID + cond + ID:cond : 1.341518e+491 ±1.57%
-#> 
-#> Against denominator:
-#>   Intercept only 
-#> ---
-#> Bayes factor type: BFlinearModel, JZS
 ```
 
 Under "Constraints analysis" you see the Bayes factor in favour of your defined constraints, where the full model `[4]` (under *Bayes factor analysis*) is in the denominator. So, the Bayes factor of the constraints analysis is the Bayes factor between the constrained model and model `[4]`. Furthermore, you can see the posterior and prior probabilities of the constraints given the unconstrained model. You can think of the prior probability as the probability of the constraints holding *before* seeing the data, and the posterior probability as the probability of the constraints holding *after* seeing the data. We see that the constrained model is the preferred model.
 
 Under "Bayes factor analysis" you can see the output from the `generalTestBF` function from the [`BayesFactor` package](https://CRAN.R-project.org/package=BayesFactor). See the BayesFactor vignettes for details on how to manipulate Bayes factor objects. Model number three `[3]` with only main effects is the common effect model. Model number four `[4]` with the interaction term `ID:cond` allows for random slopes. The random effects model is the preferred model which suggests that the equality constraint does not hold. You can get a direct comparison between the two by manipulating the `generalTestObj` slot of the `resStroop` object:
 
-
-```r
+```{r}
 bfs <- resStroop@generalTestObj
 bfs[4] / bfs[3]
-#> Bayes factor analysis
-#> --------------
-#> [1] ID + cond + ID:cond : 2.986467 ±1.81%
-#> 
-#> Against denominator:
-#>   rtS ~ ID + cond 
-#> ---
-#> Bayes factor type: BFlinearModel, JZS
 ```
 
 To get a comparison between the prefered model and all other models:
 
-
-```r
+```{r}
 bfs / max(bfs)
-#> Bayes factor analysis
-#> --------------
-#> [1] ID                  : 2.941373e-63  ±1.57%
-#> [2] cond                : 6.839531e-441 ±1.57%
-#> [3] ID + cond           : 0.3348438     ±1.81%
-#> [4] ID + cond + ID:cond : 1             ±0%
-#> 
-#> Against denominator:
-#>   rtS ~ ID + cond + ID:cond 
-#> ---
-#> Bayes factor type: BFlinearModel, JZS
 ```
 
 #### Plotting Individual Effects
 
 You can produce a plot of the individual effects; both the observed effects and the model estimates. The individual effects are the differences between the levels you specified in your constraints. In the plot below, we see the individual differences in response times between `cond = 2` and `cond = 1`.
 
-
-```r
+```{r quickstart-stroop}
 plotEffects(resStroop)
 ```
-
-<img src="quickstart-stroop-1.png" title="plot of chunk quickstart-stroop" alt="plot of chunk quickstart-stroop" style="display: block; margin: auto;" />
 
 We can see that the observed effects shows individuals with a negative effect. However, the model estimates are shrunk towards the grand mean and no individual has an estimated *true* negative effect.
 
 If you want to manipulate the plot, you can do so by adding `ggplot2` layers to it, or start from scratch by setting the `.raw` argument to `TRUE` to get the `data.frame` used to produce the plot.
 
-
-```r
+```{r eval=FALSE}
 plotEffects(resStroop, .raw = TRUE)
 ```
 
@@ -177,8 +133,7 @@ We conclude this quick start guide by showing how to impute more than one constr
 
 The plotting function produces a comparison of observed effects versus the model estimates for each difference defined in your constraints. On the right side of the plot you see the labels of the differences.
 
-
-```r
+```{r quickstart-ld5, message=FALSE, warning=FALSE}
 data(ld5)
 
 resLD5 <- constraintBF(formula = rt ~ sub * distance + side,
@@ -193,5 +148,3 @@ resLD5 <- constraintBF(formula = rt ~ sub * distance + side,
 
 plotEffects(resLD5)
 ```
-
-<img src="quickstart-ld5-1.png" title="plot of chunk quickstart-ld5" alt="plot of chunk quickstart-ld5" style="display: block; margin: auto;" />

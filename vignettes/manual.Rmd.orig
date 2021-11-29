@@ -7,7 +7,18 @@ vignette: >
   %\VignetteEngine{knitr::rmarkdown}
 ---
 
-
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width=7,
+  fig.height=5,
+  fig.align="center",
+  eval=TRUE,
+  message=FALSE,
+  warning=FALSE
+)
+```
 
 ### Introduction {#intro}
 
@@ -94,13 +105,11 @@ The main work of the project was figuring out the imputation of constraints. The
 
 At this point the `quid` package can only be installed from github. For this you need to install the `devtools` package and then run the `install_github` function. You can include the argument `build_vignettes = TRUE` to also install this manual. This might take slightly longer to install. Lastly, you have to load the package via `library`:
 
-
-```r
+```{r loading, message=FALSE, eval=FALSE}
 devtools::install_github("lukasklima/quid", build_vignettes = TRUE)
 ```
 
-
-```r
+```{r}
 library(quid)
 ```
 
@@ -122,8 +131,7 @@ We continue the Stroop example from above and show how to perform the analyis wi
 
 The main function of the package is the `constraintBF` function. It lets you impute order constraints on individual effects and computes their Bayes factors. As described above, we use Bayesian mixed models and thus require an interaction term between fixed and random factors. Below is the function call and each function argument is further explained thereunder.
 
-
-```r
+```{r}
 data(stroop)
 
 resStroop <- constraintBF(formula = rtS ~ ID + cond + ID:cond,
@@ -152,141 +160,69 @@ For completeness, we include a small discussion of the prior choices in this exa
 
 Let us recap what we have done so far. We have a data set with within-subjects repeated measures in two conditions: *congruent* and *incrongruent*. Theory stipulates that response times are faster in the congruent condition vs. the incongruent condition. Thus the difference between the two conditions is *positive*. Our aim was to test whether this is true for every participant, or in other words, whether there are *quantitative* **and** *qualitative* individual differences. We thus formulated four models. The *unconstrained* model allows for *quantitative* **and** *qualitative* differences. The *constrained* or *positive* model allows only for quantitative differences, that is, all individual effects are positive. The *common-effect* model holds that there are no individual differences whatsoever. The *null* model expects all individual effects to be zero. With that in mind, let us have a look at the output that we get when printing the object.
 
-
-```r
+```{r}
 resStroop
-#> 
-#> Constraints analysis
-#> --------------
-#> Bayes factor          : 13.06538
-#> Posterior probability : 0.6685556
-#> Prior probability     : 0.05117
-#> 
-#> Constraints defined: 
-#>  cond : 1 < 2
-#> 
-#> =========================
-#> 
-#> Bayes factor analysis
-#> --------------
-#> [1] ID                  : 3.945904e+428 ±0%
-#> [2] cond                : 9.175351e+50  ±0%
-#> [3] ID + cond           : 4.549717e+490 ±1.02%
-#> [4] ID + cond + ID:cond : 1.386578e+491 ±3.04%
-#> 
-#> Against denominator:
-#>   Intercept only 
-#> ---
-#> Bayes factor type: BFlinearModel, JZS
 ```
 
 First, the constraints analysis output. The Bayes factor is the Bayes factor of the *constrained* model (i.e. positive model) vs. the *unconstrained* model. Furthermore, you can see the posterior and prior probabilities of the constraints given the unconstrained model. You can think of the prior probability as the probability of the constraints holding *before* seeing the data, and the posterior probability as the probability of the constraints holding *after* seeing the data. We see that the constrained model is the preferred model. At the bottom you can see your imputed constraints.
 
 Second, under "Bayes factor analysis" you can see the output from the `generalTestBF` function from the [`BayesFactor` package](https://CRAN.R-project.org/package=BayesFactor). See the BayesFactor vignettes for details on how to manipulate Bayes factor objects. Here you see the Bayes factors of the individual models vs. the model in the denominator, the intercept only model. Model number one `[1]` is the null model. It only allows individual baselines to differ. Model number three `[3]` with only main effects is the *common effect* model. Model number four `[4]` with the interaction term `ID:cond` that allows for random slopes is the *unconstrained* model. The unconstrained model is the preferred model which suggests that the equality constraint does not hold. You can get a direct comparison between the two by manipulating the `generalTestObj` slot of the `resStroop` object:
 
-
-```r
+```{r}
 bfs <- resStroop@generalTestObj
 bfs[4] / bfs[3]
-#> Bayes factor analysis
-#> --------------
-#> [1] ID + cond + ID:cond : 3.047614 ±3.2%
-#> 
-#> Against denominator:
-#>   rtS ~ ID + cond 
-#> ---
-#> Bayes factor type: BFlinearModel, JZS
 ```
 
 You can also get a comparison between the preferred model and all other models:
 
-
-```r
+```{r}
 bfs / max(bfs)
-#> Bayes factor analysis
-#> --------------
-#> [1] ID                  : 2.845785e-63  ±3.04%
-#> [2] cond                : 6.617262e-441 ±3.04%
-#> [3] ID + cond           : 0.3281256     ±3.2%
-#> [4] ID + cond + ID:cond : 1             ±0%
-#> 
-#> Against denominator:
-#>   rtS ~ ID + cond + ID:cond 
-#> ---
-#> Bayes factor type: BFlinearModel, JZS
 ```
 
 ##### Bayes Factor comparison with the Constrained Model
 
 Lastly, we show how to get the Bayes factor of the constrained (i.e. positive) model versus the common effect model and versus the null model. For this, we need to have the same model in the denominator. Recall that the Bayes factor for the constrained model is calculated with the unconstrained (i.e. full model `[4]`) in the denominator. The first step is thus to get the Bayes factors of the two models versus the unconstrained model:
 
-
-```r
+```{r}
 (bfsVSfull <- bfs / bfs[4])
-#> Bayes factor analysis
-#> --------------
-#> [1] ID                  : 2.845785e-63  ±3.04%
-#> [2] cond                : 6.617262e-441 ±3.04%
-#> [3] ID + cond           : 0.3281256     ±3.2%
-#> [4] ID + cond + ID:cond : 1             ±0%
-#> 
-#> Against denominator:
-#>   rtS ~ ID + cond + ID:cond 
-#> ---
-#> Bayes factor type: BFlinearModel, JZS
 ```
 
 Note that this output is the same as the last one, since the full model is also the preferred model. This is not always the case, thus always specify the full model via indexing. Next, we extract the Bayes factors of the two models. The easiest way to get the Bayes factors as data is to use the `extractBF` function:
 
-
-```r
+```{r}
 (bfsVSfullDF <- BayesFactor::extractBF(bfsVSfull))
-#>                               bf      error                     time         code
-#> ID                  2.845785e-63 0.03035253 Mon Nov 29 16:45:08 2021 ea032d392a2c
-#> cond                0.000000e+00 0.03035252 Mon Nov 29 16:45:08 2021  ea033ffc5e6
-#> ID + cond           3.281256e-01 0.03200737 Mon Nov 29 16:45:08 2021  ea03d198117
-#> ID + cond + ID:cond 1.000000e+00 0.00000000 Mon Nov 29 16:45:08 2021  ea0356a13b9
 ```
 
 From this `data.frame` we can extract the Bayes factors via indexing:
 
-
-```r
+```{r}
 bfNullVSfull <- bfsVSfullDF$bf[1]
 bfCommonVSfull <- bfsVSfullDF$bf[3]
 ```
 
 Lastly, we extract the Bayes factor of the constrained model:
 
-
-```r
+```{r}
 bfConstrainedVSfull <- resStroop@constraints@bayesFactor
 ```
 
 Now we have all the Bayes factors with the same model (i.e. the full model) in the denominator. They are now in the same "unit" and you can thus simply divide them with each other to get the Bayes factor in favour of the model in the numerator. The Bayes factors for the constrained model versus the null model and the common effect model are, respectively:
 
-
-```r
+```{r}
 bfConstrainedVSfull / bfNullVSfull
-#> [1] 4.591134e+63
 ```
 
-
-```r
+```{r}
 bfConstrainedVSfull / bfCommonVSfull
-#> [1] 39.81824
 ```
 
 #### Estimated True vs. Observed Effects
 
 With the `plotEffects` function, you can plot the individual observed vs. the estimated true effects:
 
-
-```r
+```{r manual-stroop}
 plotEffects(resStroop)
 ```
-
-<img src="manual-stroop-1.png" title="plot of chunk manual-stroop" alt="plot of chunk manual-stroop" style="display: block; margin: auto;" />
 
 The individual effects in the plot are taken from your defined constraints. You can see the constraints on the right side of the plot. Here they are the difference between `cond = 2` and `cond = 1`.
 
@@ -296,8 +232,7 @@ On the left, you see the *observed* effects, which are a function of true effect
 
 If you want to manipulate the plot, you can do so by adding `ggplot2` layers to it, or start from scratch by setting the `.raw` argument to `TRUE` to get the `data.frame` used to produce the plot.
 
-
-```r
+```{r eval=FALSE}
 plotEffects(resStroop, .raw = TRUE)
 ```
 
@@ -319,8 +254,7 @@ In actuality, we can capture the same variation as [Haaf et al. (2019)](#HaafKla
 
 Let us test the *Analog-Representation Theory*. Have a look at the code block below. All function arguments were discussed above in the Stroop example. The only thing different here is the input to `whichConstraint`. The *Analog-Representation Theory* holds that response times for numbers further away from five are *faster* (i.e. smaller). We thus impute each comparison separately. For the prior settings in `rscaleEffects`, we again have to specify a prior scale for each effect in your constraints and for every effect in its interactions and for the interaction itself. Since we have domain knowledge, we also include a prior specification for `side`.
 
-
-```r
+```{r}
 data(ld5)
 
 resLD5 <- constraintBF(formula = rt ~ sub * distance + side,
@@ -334,35 +268,6 @@ resLD5 <- constraintBF(formula = rt ~ sub * distance + side,
                                          "sub:distance" = 1/10))
 
 resLD5
-#> 
-#> Constraints analysis
-#> --------------
-#> Bayes factor          : 22.38643
-#> Posterior probability : 0.04544444
-#> Prior probability     : 0.00203
-#> 
-#> Constraints defined: 
-#>  distance : 2 < 1
-#>  distance : 3 < 2
-#> 
-#> =========================
-#> 
-#> Bayes factor analysis
-#> --------------
-#> [1] sub                                  : 4.36765e+1044  ±0.01%
-#> [2] distance                             : 1.523779e+41   ±0.01%
-#> [3] sub + distance                       : 1.435453e+1100 ±1.1%
-#> [4] sub + distance + sub:distance        : 1.354475e+1100 ±1.05%
-#> [5] side                                 : 0.052699       ±0%
-#> [6] sub + side                           : 2.292447e+1043 ±3.03%
-#> [7] distance + side                      : 7.761775e+39   ±1.29%
-#> [8] sub + distance + side                : 7.479702e+1098 ±1.57%
-#> [9] sub + distance + sub:distance + side : 7.676956e+1098 ±6.31%
-#> 
-#> Against denominator:
-#>   Intercept only 
-#> ---
-#> Bayes factor type: BFlinearModel, JZS
 ```
 
 We can see that the constrained model is the preferred model against the unconstrained model `[9]`. At the bottom you can see that the defined constraints now have two levels. Furthermore, from "Bayes factor analysis" we can see that the preferred model is not that clear-cut. Models `[3]` with only the main effects `sub` and `distance`, and model `[4]` with the added `sub:distance` perform pretty well. Which model is the preferred model in such a case will also depend on the specific iteration of posterior sampling. You can get more stable estimates by increasing the posterior sampling iterations by use of the `iterationsPosterior` argument, and by increasing the prior sampling iterations by use of the `iterationsPrior` argument. Note that big values will increase the computation time quite significantly.
@@ -371,15 +276,13 @@ We can see that the constrained model is the preferred model against the unconst
 
 Let us now compare the Bayes factors between the constrained model and model `[4]` from the Bayes factor analysis. Although model `[3]` performs comparably well, it has no theoretical foundation (see [Haaf et al., 2019](#HaafKlaassen2019)). Hence, we only consider model `[4]` for now.
 
-
-```r
+```{r}
 bfs <- resLD5@generalTestObj
 bfsVSfull <- bfs / bfs[9]
 bfsVSfullDF <- BayesFactor::extractBF(bfsVSfull)
 bf4VSfull <- bfsVSfullDF$bf[4]
 bfConstrainedVSfull <- resLD5@constraints@bayesFactor
 bfConstrainedVSfull / bf4VSfull
-#> [1] 1.268828
 ```
 
 Remember that the constrained model is the full model with additional constraints. Hence, the constrained model also includes the effect of `side` and this may be the reason why it performs poorly here. We will later reinvestigate this by rerunning the analysis without `side`.
@@ -388,19 +291,15 @@ Remember that the constrained model is the full model with additional constraint
 
 Again we can plot the observed effects versus the estimated true effects given the unconstrained model. The plotting function produces a comparison for each difference defined in your constraints. On the right side of the plot you see the labels of the differences. We can again observe that the model estimates are shrunk.
 
-
-```r
+```{r manual-ld5}
 plotEffects(resLD5)
 ```
-
-<img src="manual-ld5-1.png" title="plot of chunk manual-ld5" alt="plot of chunk manual-ld5" style="display: block; margin: auto;" />
 
 ##### Omitting the Side Effect
 
 From the model comparison output above, we can see that any model that includes the `side` effect performs worse than the same model omitting `side`. Therefore, we will rerun the analysis excluding the `side` effect:
 
-
-```r
+```{r}
 resLD5noSide <- constraintBF(formula = rt ~ sub * distance,
                              data = ld5,
                              whichRandom = c("sub"),
@@ -411,42 +310,25 @@ resLD5noSide <- constraintBF(formula = rt ~ sub * distance,
                                                "sub:distance" = 1/10))
 
 resLD5noSide
-#> 
-#> Constraints analysis
-#> --------------
-#> Bayes factor          : 22.41462
-#> Posterior probability : 0.05177778
-#> Prior probability     : 0.00231
-#> 
-#> Constraints defined: 
-#>  distance : 2 < 1
-#>  distance : 3 < 2
-#> 
-#> =========================
-#> 
-#> Bayes factor analysis
-#> --------------
-#> [1] sub                           : 4.36765e+1044  ±0.01%
-#> [2] distance                      : 1.523779e+41   ±0.01%
-#> [3] sub + distance                : 1.441985e+1100 ±1.53%
-#> [4] sub + distance + sub:distance : 1.327956e+1100 ±0.65%
-#> 
-#> Against denominator:
-#>   Intercept only 
-#> ---
-#> Bayes factor type: BFlinearModel, JZS
 ```
 
 Again we see that the constrained model is the preferred model when compared to the full model. However, the best performing model by a slight margin is model `[3]`. Recall that the constrained model is now the full model (i.e. without `side`) with added constraints. Below is an overview of the comparisons we made and the resulting natural logarithms of the Bayes factors. We take the log because some of the Bayes factors are very big, approaching infinity.
 
+```{r echo=FALSE}
+consVSucnoside <- bfConstrainedVSfull / bf4VSfull
+bfs <- resLD5@generalTestObj
+bfFull <- BayesFactor::extractBF(bfs, logbf = TRUE)
 
-Model                             Against                          logBF
---------------------------------  ---------------------------  ---------
-constrained                       unconstrained                    3.108
-constrained                       unconstrained without side       0.238
-constrained without side          unconstrained without side       3.110
-full unconstrained                intercept only                2530.277
-full unconstrained without side   intercept only                2533.127
+bfsnoSide <- resLD5noSide@generalTestObj
+bfFullnoSide <- BayesFactor::extractBF(bfsnoSide, logbf = TRUE)
+
+bf <- c(log(resLD5@constraints@bayesFactor), log(consVSucnoside), log(resLD5noSide@constraints@bayesFactor), bfFull$bf[9], bfFullnoSide$bf[4])
+mod <- c("constrained", "constrained", "constrained without side", "full unconstrained", "full unconstrained without side")
+against <- c("unconstrained", "unconstrained without side", "unconstrained without side", "intercept only", "intercept only")
+
+d <- data.frame("Model" = mod, "Against" = against, "logBF" = bf)
+knitr::kable(d, format = "simple", digits = 3)
+```
 
 ### Discussion and Limitations
 We have shown how to use the `quid` package to analyse two different data sets containing within-subjects repeated measures. For the Stroop effect, we saw that the data are around 13 times more probable under the constrained (i.e. positive effect model) than under the unconstrained model. For the lexical task, we saw that the data are around 3 times more probable under the constrained model (i.e. the analog-representation theory model) than under the unconstrained model. Furthermore, we hope to have exemplified the added benefit of this data analysis method.
