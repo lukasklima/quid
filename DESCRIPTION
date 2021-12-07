@@ -9,7 +9,10 @@ Depends: R (>= 3.2.0)
 Maintainer: Lukas Klima <lukas.klima@live.at>
 Description: Test whether equality and order constraints hold for all 
     individuals simultaneously by comparing Bayesian mixed models through Bayes 
-    factors.
+    factors. A tutorial style vignette and a quickstart guide are available, via
+    vignette("manual", "quid"), and vignette("quickstart", "quid") respectively.
+    See Haaf and Rouder (2017) <doi:10.1037/met0000156>; Haaf, Klaassen and Rouder
+    (2019) <doi:10.31234/osf.io/a4xu9>; and Rouder & Haaf (2021) <doi:10.5334/joc.131>.
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
