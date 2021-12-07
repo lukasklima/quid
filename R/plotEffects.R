@@ -8,10 +8,15 @@
 #' @param .raw if \code{FALSE}, outputs the plot. If \code{TRUE} returns the
 #'   \code{data.frame} that is used for making the plot.
 #'
+#' @return A \code{\link[ggplot2]{ggplot}} object if \code{.raw = FALSE}. A
+#'   \code{data.frame} otherwise, with columns for ID, type of effect,
+#'   specified constraint, estimates, and ordering of estimate from smallest
+#'   to largest.
+#'
 #' @export
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' data(stroop)
 #'
 #' resStroop <- constraintBF(rtS ~ ID*cond,
