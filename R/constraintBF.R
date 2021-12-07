@@ -57,7 +57,7 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' data(stroop)
 #'
 #' resStroop <- constraintBF(rtS ~ ID*cond,
