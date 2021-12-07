@@ -78,7 +78,7 @@ of the models, priors and methods is given in the documentation of
 \code{\link[BayesFactor]{anovaBF}} and more extensively in Rouder et al. (2012).
 }
 \examples{
-\dontrun{
+\donttest{
 data(stroop)
 
 resStroop <- constraintBF(rtS ~ ID*cond,
