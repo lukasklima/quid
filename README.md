@@ -1,4 +1,5 @@
 
+<!-- README.md is generated from README.Rmd. Please edit that file -->
 <!-- badges: start -->
 
 [![R-CMD-check](https://github.com/lukasklima/quid/workflows/R-CMD-check/badge.svg)](https://github.com/lukasklima/quid/actions)
@@ -21,15 +22,11 @@ and the statistical models used see the main manual.
 
 ### Loading the Package
 
-At this point the `quid` package can only be installed from github. For
-this you need to install the `devtools` package and then run the
-`install_github` function. You can include the argument
-`build_vignettes = TRUE` to also install this manual. This might take
-slightly longer to install. Lastly, you have to load the package via
-`library`:
+In order to use the `quid` package it must be installed from CRAN and
+then loaded via `library`:
 
 ``` r
-devtools::install_github("lukasklima/quid", build_vignettes = TRUE)
+install.packages("quid")
 ```
 
 ``` r

@@ -28,10 +28,10 @@ This is a quick start guide. For an extensive description of the package and the
 
 ### Loading the Package {#loading}
 
-At this point the `quid` package can only be installed from github. For this you need to install the `devtools` package and then run the `install_github` function. You can include the argument `build_vignettes = TRUE` to also install this manual. This might take slightly longer to install. Lastly, you have to load the package via `library`:
+In order to use the `quid` package it must be installed from CRAN and then loaded via `library`:
 
 ```{r loading, eval=FALSE, message=FALSE}
-devtools::install_github("lukasklima/quid", build_vignettes = TRUE)
+install.packages("quid")
 ```
 
 ```{r}
